@@ -40,8 +40,12 @@
  17. [열거(Enum) 타입](#열거enum-타입)
  18. [클래스(Class)](#클래스class)  
 	18-1. [프로그램의 발전(왜 Java에서는 Class라는 것을 쓰는가?)](#기타---프로그램의-발전왜-java에서는-class라는-것을-쓰는가)  
-	18-2. [은행 입출금 로직 구성](#은행-입출금-로직-구성)
- 99. [기타 - main 메서드에 인수 주기](#기타---main-메서드에-인수-주기)
+	18-2. [은행 입출금 로직 구성](#은행-입출금-로직-구성)  
+	18-3. [로또 번호 추첨 로직 구성](#로또-번호-추첨-로직-구성)
+ 19. [가변 파라미터](#가변-파라미터)
+ 20. [Overload(중복 정의)](#overload중복-정의)
+ - [기타 - main 메서드에 인수 주기](#기타---main-메서드에-인수-주기)
+ - [기타 - Java의 메서드 호출 방식](#기타---java의-메서드-호출-방식)
 
 ---
 <br/><br/>
@@ -1510,6 +1514,133 @@ public class AccountTest {
 }
 ```
 
+### 로또 번호 추첨 로직 구성
+```java
+import java.util.Arrays;
+import java.util.Random;
+
+public class Lotto {
+	private final static int LOTTO_NUM_CNT = 6;
+	public int[] generateLottoNumbers() {
+		/* 6개의 요소를 저장할 정수 배열 생성
+		   getRandomNumber(); // 호출로 반환되는 정수를 가져와 배열에 이미 저정되어 있는 요소 값 비교해서
+		   중복되지 않으면 배열의 요소로 저장, 중복되면 getRandomNumber(); 호출로 다시 난수를 가져옴.
+		   로또 번호 6개 저장된 배열을 리턴 */
+		int[] lottos = new int[LOTTO_NUM_CNT];
+		for(int i=0; i<LOTTO_NUM_CNT; i++) {
+			boolean flag = false;
+			lottos[i] = getRandomNumber();
+			 // 같은 클래스에 메서드가 있기 때문에 그냥 호출 가능.
+			for(int j=0; j<i; j++) {
+				if(lottos[j] == lottos[i]) {
+					flag = true;
+					break;
+				}
+			}
+			if(flag) {
+				--i;
+			}
+		}
+		return lottos;
+	}
+	public void displayLottoNumbers(int[] lottoNumbers) {
+		// 파라미터로 전달된 로또 번호 즉, 저장된 배열을 출력
+		for(int n : lottoNumbers) {
+			System.out.println(n + " ");
+		}
+	}
+	public void sortLottoNumbers(int[] lottoNumbers) {
+		// 파라미터로 전달된 로또 번호 즉, 저장된 배열을 정렬
+		Arrays.sort(lottoNumbers);
+	}
+	private int getRandomNumber() {
+		Random r = new Random();
+		return r.nextInt(45)+1;
+	}
+}
+```
+```java
+public class LottoTest {
+
+	public static void main(String[] args) {
+		Lotto lotto = new Lotto();
+		int[] lottos = lotto.generateLottoNumbers();
+		 // 같은 클래스에 없는 메서드이기 때문에 별도 객체 생성 필요.
+		lotto.sortLottoNumbers(lottos);
+		lotto.displayLottoNumbers(lottos);
+	}
+
+}
+```
+
+
+## 가변 파라미터
+ - 메서드의 파라미터중에서 동일한 타입의 파라미터 개수가 실행시점에 동적으로 결정되는 경우에 사용한다.
+	```java
+	public class VarArgsEx {
+		public void add(double d, int ... a) {
+			// 메서드 내부에 int ... a는 int[] a로 생성된다.
+			if (a == null) {
+				System.out.println("add Called");
+			} else {
+				System.out.println(a.length);
+				int sum = 0;
+				for (int n : a) {
+					sum += n;
+				}
+				System.out.println("누적 합 : "+sum);
+			}
+		}
+		//public void minus(int ... a, double d) {} // 오류
+			// 가변 파라미터는 다른 파라미터(필수 파라미터)를 선언한 후에 선언해야한다.
+			// 즉, 가변 파라미터는 맨 앞에 선언될 수 없다.
+		public static void main(String[] args) {
+			VarArgsEx ex = new VarArgsEx();
+			ex.add(0.5, null);
+			ex.add(0.5);
+			ex.add(0.5, 3, 5, 7, 9, 11, 13, 17, 19);
+			 // 가변 파라미터는 메서드의 이름 재사용성이 높아진다는 것을 알 수 있다.
+		       // view layer의 인터페이스 구현이 simple 해진다.
+		}
+	}
+	```
+
+
+## Overload(중복 정의)
+ - 객체지향의 특성 중 **다형성**에 해당 된다.
+ - 동일한 기능에 대해 메서드 이름을 재사용함으로써 일관성을 가질 수 있다.
+ - 작성 규칙
+ 	- AccessModifie는 동일하거나 동일하지 않아도 된다.
+	- 리턴타입은 동일하거나 동일하지 않아도 된다.
+	- 메서드 이름은 동일해야한다.
+	- 파라미터의 순서, 타입, 개수 중에 하나는 반드시 달라야한다.
+		- 파라미터의 순서, 타입, 개수는 모두 일치하면서 리턴타입만 다르게 선언하면 에러이다.
+	```java
+	public class OverloadEx {
+		public void add(int a, int b) {
+			System.out.println("add(int, int) called");
+		}
+		double add(double a, double b) {
+			System.out.println("add(double, double) called");
+			return 0;
+		}
+		protected void add(String s, int a, int b) {
+			System.out.println("add(String, int, int) called");
+		}
+		float add(float a, boolean b) {
+			System.out.println("add(float, boolean) called");
+			return 0;
+		}
+		public static void main(String[] args) {
+			OverloadEx ex = new OverloadEx();
+			ex.add(1, 2);
+			ex.add('A', 3.14F);
+			// char, float 보다 큰 타입은 메서드(double add)를 호출한다.(promotion)
+		}
+	}
+	```
+
+
 ## 기타 - main 메서드에 인수 주기
 ```java
 public class ArrayEx5 {
@@ -1525,3 +1656,56 @@ public class ArrayEx5 {
 }     // main 메서드에 값을 전달 할 때는 cmd에서 "java ArrayEx5 123" 과 같이 전닳해줘야 한다. 
       // Eclipse에서는 "Run AS → Run Configuration → Arguments → Program arguments" 에 값을 넣어주면 된다.
 ```
+
+
+## 기타 - Java의 메서드 호출 방식
+ - Java에서는 포인터라는 개념이 없는 대신 아래와 같은 방식들이 있다.
+	- CallByValue 방식
+		- 메서드 호출할 때 값을 복사해서 전달
+		- JVM이 호출하는 메서드의 파라미터가 Primitive Data Type이면 CallByValue 방식으로 전달(=값을 복사해서 전달)
+	```java
+	public class CallByValueEx {
+		public void change(int a, int b) {
+			System.out.println("a="+a+", b="+b); // a=10, b=50
+			int temp = a;
+			a = b;
+			b = temp;
+			// primitive data type이기 때문에 값의 변화가 있고, 메모리 주소상의 변화는 없다.
+			System.out.println("a="+a+", b="+b); // a=50, b=10
+		}
+		public static void main(String[] args) {
+			int x = 10, y = 50;
+			// primitive data type이기 때문에 stack 영역에 저장
+			CallByValueEx ex = new CallByValueEx();
+			// class 영역에 객체가 생성됨.
+			ex.change(x, y);
+			// stack 영역에 change 메서드가 저장되었다가 메서드 종료 후, GC가 삭제함.
+			System.out.println("x="+x+", y="+y); // x=10, y=50
+		}
+	}
+	```
+	- CallByReference 방식
+		- 메서드 호출할때 주소를 전달
+		- JVM이 호출하는 메서드의 파라미터가 Reference Data Type이면 주소를 전달합니다.
+	```java
+	public class CallByReferenceEx {
+		public void change(int[] a, int[] b) {
+			System.out.println("a[0]="+a[0]+", b[0]="+b[0]); // a[0]=10, b[0]=50
+			int temp = a[0];
+			a[0] = b[0];
+			b[0] = temp;
+			// 값이 아닌 메모리 주소를 a, b에 저장하였다.
+			// x, y가 a, b와 메모리 주소가 같아 값이 같이는 것처럼 보인다.
+			System.out.println("a[0]="+a[0]+", b[0]="+b[0]); // a[0]=50, b[0]=10
+		}
+		public static void main(String[] args) {
+			int[] x = {10};
+			int[] y = {50};
+			// stack에 값이 아닌 메모리 주소가 저장됨.
+			CallByReferenceEx ex = new CallByReferenceEx();
+			ex.change(x, y);
+			// stack 영역에 change 메서드가 저장되었다가 메서드 종료 후, GC가 삭제함.
+			System.out.println("x[0]="+x[0]+", y[0]="+y[0]); // x[0]=50, y[0]=10
+		}
+	}
+	```
