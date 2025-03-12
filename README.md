@@ -1,8 +1,9 @@
 # 목차
  1. [JAVA란?](#java란) 
  2. [JAVA의 특징](#java의-특징)  
-	2-1. [GC(Garbage Collection)](#gcgarbage-collection)  
-	2-2. [Java 컴파일](#java-컴파일)
+	2-1. [객체지향 프로그램의 특성](#객체지향-프로그램의-특성)  
+	2-2. [GC(Garbage Collection)](#gcgarbage-collection)  
+	2-3. [Java 컴파일](#java-컴파일)
  3. [JDK? JRE?](#jdk-jre)  
 	3-1. [JVM(Java Virtual Machine)](#jvmjava-virtual-machine)
  4. [Java Application 유형](#java-application-유형)  
@@ -36,14 +37,28 @@
 	15-1. [반복문(for)](#반복문for)  
 	15-2. [반복문(while)](#반복문while)  
 	15-3. [반복문(do ~ while)](#반복문do--while)
- 16. [배열(Array)](#배열array)
+ 16. [배열(Array)](#배열array)  
+	16-1. [2차원 배열 프로그램](#2차원-배열-프로그램)  
+	16-2. [Banking 시스템](#banking-시스템)
  17. [열거(Enum) 타입](#열거enum-타입)
  18. [클래스(Class)](#클래스class)  
 	18-1. [프로그램의 발전(왜 Java에서는 Class라는 것을 쓰는가?)](#기타---프로그램의-발전왜-java에서는-class라는-것을-쓰는가)  
 	18-2. [은행 입출금 로직 구성](#은행-입출금-로직-구성)  
-	18-3. [로또 번호 추첨 로직 구성](#로또-번호-추첨-로직-구성)
+	18-3. [은행 입출금 로직 구성 - 추가](#은행-입출금-로직-구성---추가)  
+	18-4. [로또 번호 추첨 로직 구성](#로또-번호-추첨-로직-구성)  
+	18-5. [get, set 메서드 관련](#get-set-메서드-관련)  
+	18-6. [static](#static)  
+	18-7. [final](#final)  
+	18-8. [추상 클래스](#추상-클래스)
  19. [가변 파라미터](#가변-파라미터)
  20. [Overload(중복 정의)](#overload중복-정의)
+ 21. [접근제어자](#접근제어자)  
+	21-1. [싱글톤 패턴(Singleton Pattern)](#싱글톤-패턴singleton-pattern)
+ 22. [상속(Inheritance)](#상속inheritance)  
+	22-1. [UpCasting, DownCasting 및 다형성 개념](#upcasting-downcasting-및-다형성-개념)
+ 23. [오버라이딩(Overriding)](#오버라이딩overriding)
+ 24. [인터페이스(interface)](#인터페이스interface)
+ 25. [클래스 중첩 선언](#클래스-중첩-선언)
  - [기타 - main 메서드에 인수 주기](#기타---main-메서드에-인수-주기)
  - [기타 - Java의 메서드 호출 방식](#기타---java의-메서드-호출-방식)
 
@@ -109,6 +124,24 @@
 	  그러나 Java는 메모리와 같은 자원 관리가 능동적으로 되기 때문에 비교적 쉽게 구현 가능하다.
 	  	- 스레드가 자원을 공정하게 사용하지 못하면 기아상태가 발생하여 프로그램에 영향이 발생할 수 있다.
 	  		- 스레드(Thread) : 프로그램(Process) 내에 실행 단위
+
+### 객체지향 프로그램의 특성
+ - 상속(Inheritance)
+	- 부모 클래스의 속성과 메서드를 자식 클래스에서는 자신의 멤버 속성과 메서드처럼 사용 가능하다.
+	- 이는 코드의 재사용성을 높이고, 유지보수를 쉽게 한다
+ - 다형성(Polymorphism) : 여러 형태를 가진다.
+	- 오버로딩(Overloading)
+		- 같은 클래스에서 같은 이름의 메서드를 매개변수만 다르게 정의하여 활용.
+	- 오버라이딩(Overriding)
+		- 부모로부터 상속받은 메서드를 자식 클래스에서 재정의
+ - 캡슐화(Encapsulation)
+	- private, protected, public 같은 접근 제한자를 사용하여 데이터를 보호한다.
+	- 데이터를 직접 변경하는 것이 아니라, 메서드를 통해 접근하도록 설계할 수 있다.
+		- 이는 데이터의 보안, 유지 보수성을 높일 수 있다.
+	- 완전 캡슐화
+		- 클래스의 인스턴스 필드를 모두 private로 선언
+		- 보안 관점에서 get 메서드는 public으로 선언
+		- set 메서드는 default, protected, public 접근 제한자를 사용하여 데이터를 보호
 
 ### GC(Garbage Collection)
  - Java의 메모리 관리 방법 중의 하나이다.
@@ -1224,8 +1257,13 @@ do {
 	- Zero-Based Numbering
  - 배열은 새로운 배열로 복사 할 수 있다.
 	- 근데 참조자료형은 복사 시, 얕은 복사와 깊은 복사가 있다.
-		- 얕은 복사
-		- 깊은 복사
+		- 얕은 복사(Shallow Copy)
+			- 단순한 변수 선언을 통한 복사
+			- 복사하려는 배열의 주소값을 가져오게 된다.
+			- 즉, 기존 배열과의 주소값이 같다.
+		- 깊은 복사(Deep Copy)
+			- 원래 배열을 그대로 가져와 새 배열에 덮어쓰기 하는 것이다.
+			- 즉, 기존 배열과의 주소값이 달라지게 된다.
 ```plaintext
 // 1차원 배열 선언 방법
 타입[] 변수;
@@ -1241,6 +1279,7 @@ int[] nums[];
 
 nums = new int[5][7];
 nums = new int[5][]; // 가능
+ // 1차원 배열의 개수를 고정시키고, 각각의 2차원 배열 개수를 동적으로 생성할 수 있다.
 nums = new int[][5]; // 에러 발생
 nums = new int[][] {{1,2}, {4,5,6,7}, {8,9,10,11,12}};
 ```
@@ -1363,6 +1402,240 @@ public static void main(String[] args) {
 }
 ```
 
+### 2차원 배열 프로그램
+ - 2개의 2차원 배열을 생성한 후, Random하게 셋팅된 배열의 데이터를 출력하고, 2개의 배열에서 일치하는 숫자가 있는지 찾아보는 프로그램을 만들자.
+	```java
+	import java.util.Random;
+
+	public class Array {
+		private String title;
+		private int row;
+		private int col;
+		private int[][] array;
+		public Array(String title, int row, int col ) {
+			super();
+			this.title = title;
+			this.row = row;
+			this.col = col;
+			this.array = new int[row][col];
+		}
+		public int getRow() {
+			return row;
+		}
+		public void setRow(int row) {
+			this.row = row;
+		}
+		public int getCol() {
+			return col;
+		}
+		public void setCol(int col) {
+			this.col = col;
+		}
+		public int[][] getArray() {
+			return array;
+		}
+		public void setArray(int[][] array) {
+			this.array = array;
+		}
+		public void makeArrayData() {
+			for(int i=0;i<array.length;i++) {
+				for (int j=0;j<array[i].length;j++) {
+					array[i][j] = getRandomNumber();
+				}
+			}		
+		}
+		private int getRandomNumber() {
+			Random rand = new Random();
+			return rand.nextInt(row*col)+1;
+		}
+		public void printArray() {
+			System.out.println("## "+title+" Array 출력");
+			for(int i=0;i<array.length;i++) {
+				for (int j=0;j<array[i].length;j++) {
+					System.out.print(array[i][j]+"  ");	
+				}
+				System.out.println();
+			}	
+		}
+		public void findMatchNumber(Array src, Array desc) {
+			int[][] ar1 = src.getArray();
+			int[][] ar2 = desc.getArray();
+			int count = 0;
+			for(int i=0;i<ar1.length;i++) {
+				for (int j=0;j<ar1[i].length;j++) {
+					if (ar1[i][j]==ar2[i][j]) {
+						count++;
+						System.out.printf("## 일치하는 숫자 : [%d][%d]=%d, ", i, j,ar1[i][j] );
+					}
+				}
+			}
+			System.out.println("\n## 일치하는 숫자 갯수: "+count);		
+		}
+	}
+	```
+	```java
+	public class ArrayTest {
+		public static void main(String[] args) {
+			Array array = new Array("1st", 3, 4);
+			array.makeArrayData();
+			array.printArray();
+			
+			Array array2 = new Array("2nd", 3, 4);
+			array2.makeArrayData();
+			array2.printArray();
+			
+			array.findMatchNumber(array, array2);
+		}
+	}
+	```
+
+### Banking 시스템
+ - Customer는 여러 개의 Account(계좌)를 가질 수 있고, Bank는 여러 명의 Customer를 가질 수 있다.  
+   즉, Customer:Account = 1:n, Bank:Customer = 1:n 관계가 성립한다.
+   ```java
+    public class Account {
+		private String accountName;
+		private int balance;
+
+		public Account(String accountName, int balance) {
+			this.accountName = accountName;
+			this.balance = balance;
+		}
+		public String getAccountName() {
+			return this.accountName;
+		}
+		public void setAccountName(String accountName) {
+			this.accountName = accountName;
+		}
+		public int getBalance() {
+			return balance;
+		}
+		public void setBalance(int balance) {
+			this.balance = balance;
+		}
+		public boolean deposit(int amount) {
+			boolean flag = true;
+			if (amount <= 0) {
+				flag = false;
+			} else {
+				this.balance += amount;
+			}
+			return flag;
+		}
+		public boolean withdraw(int amount) {
+			boolean flag = true;
+			if (amount <= 0) {
+				flag = false;
+			} else if (amount > this.balance) {
+				flag = false;
+			} else {
+				this.balance -= amount;
+			}
+			return flag;
+		}
+	}
+   ```
+   ```java
+    public class Customer {
+		private String ssn;
+		private String name;
+		private Account[] accounts;
+		private int numberOfAccounts;
+		
+		public Customer(String ssn, String name) {
+			this.ssn = ssn;
+			this.name = name;
+			this.accounts = new Account[5];
+		}
+		public String getSsn() {
+			return this.ssn;
+		}
+		public void setSsn(String ssn) {
+			this.ssn = ssn;
+		}
+		public String getName() {
+			return this.name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public int getNumberOfAccounts() {
+			return this.numberOfAccounts;
+		}
+		public Account[] getAccounts() {
+			return this.accounts;
+		}
+		public void addAccount(Account account) {
+			if (numberOfAccounts >= 5) {
+				System.out.println("계좌를 더 이상 개설할 수 없습니다.!!");
+			} else {
+				this.accounts[numberOfAccounts++] = account;
+			}
+		}
+	}
+   ```
+   ```java
+    public class Bank {
+		private Customer[] customers;
+		private int numberOfCustomers;
+		
+		public Bank() {
+			customers = new Customer[10];
+		}
+		public Customer[] getCustomers() {
+			return this.customers;
+		}
+		public int getNumberOfCustomers() {
+			return this.numberOfCustomers;
+		}
+		public void addCustomer(Customer customer) {
+			if (numberOfCustomers >= 10) {
+				System.out.println("고객을 더 이상 등록 할 수 없습니다!!");
+			} else {
+				customers[numberOfCustomers++] = customer;
+			}
+		}	
+	}
+   ```
+   ```java
+    public class BankingTest {
+		public static void main(String[] args) {
+			Customer c1 = new Customer("111-111", "홍길동");
+			c1.addAccount(new Account("청약저축", 10000));
+			c1.addAccount(new Account("종합저축", 20000));
+			c1.addAccount(new Account("1억만들기펀드", 30000));
+			c1.addAccount(new Account("1억만들기펀드1", 30000));
+			c1.addAccount(new Account("1억만들기펀드2", 30000));
+			
+			Customer c2 = new Customer("222-222", "홍길자");
+			c2.addAccount(new Account("입출금통장", 10000));
+			c2.addAccount(new Account("CMA", 20000));
+			
+			Bank bank = new Bank();
+			bank.addCustomer(c1);
+			bank.addCustomer(c2);
+			
+			for(int i=0; i<bank.getNumberOfCustomers(); i++) {
+				int total = 0;
+				System.out.println("------------------------------------------------");
+				System.out.print("주민등록번호 : " + bank.getCustomers()[i].getSsn());
+				System.out.print(" 성명 : " + bank.getCustomers()[i].getName());
+				System.out.print(", 보유계좌수 : " + bank.getCustomers()[i].getNumberOfAccounts() + "\n");
+				System.out.println("------------------------------------------------");
+				Account[] accounts = bank.getCustomers()[i].getAccounts();
+				for(int j=0; j<bank.getCustomers()[i].getNumberOfAccounts(); j++) {
+					System.out.print((j+1) + ". 계좌명: " + accounts[j].getAccountName());
+					System.out.println(", 잔액: " + accounts[i].getBalance() + "원");
+					total += accounts[j].getBalance();
+				}
+				System.out.println("------------------------------------------------");
+				System.out.println("전체 총 잔액:" + total + "원");
+				System.out.println("------------------------------------------------");
+			}
+		}
+	}
+   ```
+
 
 ## 열거(Enum) 타입
  - 데이터 중에는 몇가지로 한정된 값을 가지는 경우가 있다.
@@ -1401,10 +1674,16 @@ public static void main(String[] args) {
 			- 다중 상속 불가
 		- 인터페이스는 구현되지 않은 기능을 구현하는 방식으로 다중 상속을 지원하는 참조 타입이다.
 	- 클래스 멤버 필드(변수) (속성, Data)
+		- 멤버필드들은 명시적으로 초기화하지 않으면 default값으로 초기화된다.
+			- boolean 타입은 false
+			- 정수와 실수 타입은 0
+			- char 타입은 '\u0000'
+				- 유니코드 기준으로 처리됨.
+			- 참조자료형은 null
 		```plaintext
 		AccessModifier [Modifier] 타입 변수명;
 			// 선언만 한 경우에는 default 값으로 초기화됨.
-		AccessModifier [Modifier] 타입 변수먕 = 초기값;
+		AccessModifier [Modifier] 타입 변수명 = 초기값;
 		```
 		- AccessModifier를 필수적으로 선언해줘야 한다.
 			- public
@@ -1420,14 +1699,55 @@ public static void main(String[] args) {
 			- Primitive Data Type
 			- Reference Data Type
 	- 생성자 메서드 (객체를 생성할 때 초기화)
+		- 객체가 메모리에 생성될 때 객체의 멤버필드들을 초기화 한다.
+		- 생성자를 명시적으로 정의하지 않으면 default 생성자를 컴파일시점에 자동 생성한다.
+		- 리턴타입을 정의하지 않는다.
+			- void도 선언하지 않는다.
+		- 메서드 이름은 반드시 클래스 이름과 대소문자 모두 동일해야한다.
+		- 생성자 메서드도 파라미터 순서, 개수, 타입을 다르게 선언해서 overload 할 수 있다.
+		- 생성자 메서드에서 생성자 메서드를 호출할 때 this()를 사용한다.
+		- 모든 생성자 메서드에서는 명시적으로 다른 생성자를 호출하지 않으면 부모클래스의 default 생성자를 호출하는 super()가 자동으로 컴파일시점에 추가된다.
 		```plaintext
 		AccessModifier 클래스이름([타입 변수명, ...]) {...}
 		```
+		- AccessModifier를 필수적으로 선언해줘야 한다.
+			- public
+			- protected
+			- default
+				- 아무것도 적지 않을 때
+			- private
 	- 클래스의 멤버 메서드 (기능, 동작)
+		- 멤버 메서드는 클래스의 멤버필드를 처리하는 기능을 위해 정의한다.
 		```plaintext
 		AccessModifier [Modifier] 리턴타입 메서드명([타입 변수명, ...]) [throws 예외클래스타입] {...};
 		```
+		- AccessModifier를 필수적으로 선언해줘야 한다.
+			- public
+			- protected
+			- default
+				- 아무것도 적지 않을 때
+			- private
+		- Modifier는 선택적으로 선언 가능하다.
+			- abstract
+			- final
+			- static
+			- synchronized
+			- native
+				- native는 java 메서드가 아니라 C와 같은 메서드를 로드하는데 쓰는거라 거의 안쓴다고 할 수 있다.
 		- 리턴타입은 필수적으로 선언해줘야 한다.
+			- Primitive Data Type
+			- Reference Data Type
+			- void
+				- 리턴타입이 없을 경우, 사용.
+		- throws 예외클래스타입은 선택적으로 선언 가능하다.
+			- 기능 동작 시, 에러가 발생하는 경우가 있는데 에러로 인해 프로그램이 멈추는 것이 아닌 에러 메세지를 반환해주고자 할 때 사용.
+ - 객체 생성 및 사용
+	```plaintext
+	클래스타입 객체 = new 생성자(); // 객체 생성
+	 // 추가로 멤버 메서드에서 같은 클래스의 다른 멤버 메서드는 객체 생성 없이 호출가능하다. 
+	객체.멤버필드 // 객체 사용
+	객체.메서드() // 객체 사용
+	```
 
 ### 기타 - 프로그램의 발전(왜 Java에서는 Class라는 것을 쓰는가?)
  1. 최초에는 절차적인 언어를 활용하였다.
@@ -1514,6 +1834,108 @@ public class AccountTest {
 }
 ```
 
+### 은행 입출금 로직 구성 - 추가
+```java
+package lab.java.basic;
+
+public class Account {
+	private int balance;
+	public Account(int balance) {
+		this.balance = balance;
+	}
+	public int getBalance() {
+		return balance;
+	}
+	public void setBalance(int balance) {
+		this.balance = balance;
+	}
+	public boolean deposit(int amount) {
+		if(amount > 0) {
+			balance += amount;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public boolean withdraw(int amount) {
+		if(amount < balance) {
+			balance -= amount;
+			return true;
+		}
+		return false;
+	}
+}
+```
+```java
+package lab.java.basic;
+
+public class Customer {
+	private String ssn;
+	private String name;
+	private Account account;
+	public Customer(String ssn, String name) {
+		super();
+		this.ssn = ssn;
+		this.name = name;
+	}
+	public String getSsn() {
+		return this.ssn;
+	}
+	public void setSsn(String ssn) {
+		this.ssn = ssn;
+	}
+	public String getName() {
+		return this.name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Account getAccount() {
+		return this.account;
+	}
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+	public String toString() { // toString 메서드 추석처리 해보기
+		return this.name + "님의 현재 잔액 : " + this.account.getBalance() + "원";
+	}
+}
+```
+```java
+package lab.java.basic;
+
+public class BankingTest {
+	public static void main(String[] args) {
+		Customer cust1 = new Customer("0001", "홍길동"); // 고객 객체
+		Account acct = new Account(10000); // 계좌 객체
+		cust1.setAccount(acct);
+		// cust1.setAccount(new Account(10000)); // 객체 생성에 대해서는 이렇게 처리할 수도 있다.
+		System.out.println(cust1); 			  // lab.java.basic.Customer@2f92e0f4
+			// 객체를 별도 메서드 지정 없이 호출하면 자동으로 toString 메서드가 지정된다.
+		System.out.println(cust1.toString()); // lab.java.basic.Customer@2f92e0f4
+			// Customer에 toString 메서드를 만들지 않으면 위와 같이 "package.class@메모리주소값" 이 나오게 된다.
+			// 이는 Customer의 부모클래스(Object)의 toString 메서드가 호출된 것이다.
+				// @ 뒤에 값은 cust1의 메모리 주소 값은 16진수로 변환되서 나온 것이다.
+			// Object 클래스의 toString 메서드는 해당 인스턴스(객체)에 대한 정보를 문자열로 반환한다.
+		
+		if(cust1.getAccount().deposit(1000)) {
+			System.out.println("입금 성공");
+		};
+		System.out.println(cust1);
+		if(cust1.getAccount().withdraw(5000)) {
+			System.out.println("출금 성공");
+		};
+		System.out.println(cust1);
+		if(cust1.getAccount().withdraw(7000)) {
+			System.out.println("출금 성공");
+		} else {
+			System.out.println("출금 실패");
+		}
+		System.out.println(cust1);
+	}
+}
+```
+
 ### 로또 번호 추첨 로직 구성
 ```java
 import java.util.Arrays;
@@ -1573,6 +1995,152 @@ public class LottoTest {
 }
 ```
 
+### get, set 메서드 관련
+ - 클래스의 멤버 필드들의 데이터를 다루기 위해서는 get과 set 메서드를 만들어준다.
+	- get은 멤버 필드의 데이터를 반환.
+	- set은 멤버 필드의 데이터를 변환.
+ - 근데 get, set 메서드는 멤버 필드 수량만큼 만들어줘야해서 양이 많아지면 번거롭다.
+ - 이를 편하게 할 수 있게하기 위해 get, set 명칭 뒤에 멤버필드명을 대문자로 시작하게 넣어주면 JVM이 get, set 메서드로 인식해서 동작하도록 하는 방법이 있다.
+	- ex) 멤버 필드가 name이면 getName, setName과 같이 메서드명을 작성.
+	- Lombok을 사용하면 어노테이션으로 처리 할 수 있고,
+	  혹은 IDE 기능을 사용해서 일괄로 자동으로 만들어줄 수 있다.
+	  	- Eclipse 같은 경우 소스 코드에서 "우클릭 → Source → Generate Getters and Setters" 로 자동 생성 할 수 있다.
+			- 참고로 생성자도 "우클릭 → Source → Generate Constructor to invoke" 로 자동 생성 할 수 있는 듯하다.
+
+### static
+ - 클래스의 멤버 필드에 선언
+	- 클래스(전역) 변수에 사용됨.
+	- 객체 생성 없이 클래스이름으로 필드를 사용 가능하다.
+ - 클래스의 멤버 메서드에 선언
+	- 클래스(전역) 변수에 대한 처리를 위해서 기능을 전역으로 객체들간에 공유할 목적으로 활용.
+	- 객체 생성 없이 클래스이름으로 메서드 호출이 가능하다.
+	- 외부 메서드 내부에서 외부 필드 또는 메서드를 사용할 경우 static 이거나 non-static인 경우에는 객체를 생성해서 사용해야 한다.
+	- static initialize block은 static {...} 와 같이 생성한다.
+		- static 메서드보다 수행이 먼저 이뤄진다.
+	```java
+	public class StaticEx {
+		int n1;
+		static int n2;
+		static { // static initialize block
+			n2+=100;
+		}
+		public void method() {
+			System.out.println(n1+ ", " + n2);
+			//staticMethod();
+			// non-static에서는 static 메서드 호출 가능
+			// 프로그램 실행 시, 무한루프로 StackOverFlow 발생할 수 있으니 주석처리 진행.
+		}
+		public static void staticMethod() {
+			StaticEx ex = new StaticEx();
+			// static 메서드에서 non-static 필드를 활용하기 위해서는 객체를 생성해야 한다.
+			System.out.println(ex.n1+ ", " + n2);
+			ex.method();
+			// 메서드 또한 non-static 이기 때문에 객체 생성 안하면 호출 불가.
+		}
+		public static void main(String[] args) {
+			//System.out.println(StaticEx.n1);
+			// main에서도 동일하게 non-static 메서드 호출 불가.
+			// 클래스명 안붙여도 호출은 가능하나, 그냥 붙임.
+			System.out.println(StaticEx.n2); // 1
+			
+			StaticEx.n2 *=5;
+			System.out.println(StaticEx.n2); // 5
+			// 수행 순서 : 클래스로드 → static 필드 초기화 → static initialize block → static 메서드
+			// 하여 결과값이 5가 된다.
+		}
+		static { // static initialize block (여러개 생성 가능)
+			n2/=100;
+		}
+	}
+	```
+ - 내부 클래스에 선언
+
+### final
+ - 클래스에 선언
+	- 종단 클래스라는 의미가 된다.
+		- 즉, 하위에 상속 및 확장이 불가능하다.
+		- Java는 최상위 클래스(Object)에서 하위로 상속받아 확장이 되는 개념이 있다는 것을 인지해둬야한다.
+	```java
+	class Parent4 {
+		
+	}
+	class Child4 extends Parent4 {
+	 // Parent4 class에 final 선언 시, 종단 클래스로 지정되어 상속 불가가 됨.
+	}
+	```
+ - 클래스의 필드에 선언
+	- 상수로 활용된다.
+		- 선언시에 값을 초기화해야하며, 초기화하지 않으면 생성자에서 초기화해줘야 한다.
+ - 클래스의 메서드에 선언
+	```java
+	class Parent5 {
+	public final void handle() {
+		
+		}
+	}
+	class Child5 extends Parent5 {
+		public void handle();
+		 // final이 선언된 메서드는 override가 불가능하다.	
+	}
+	```
+ - 로컬 변수에 유일하게 선언할 수 있는 Modifier 이다.
+ 	```java
+	public class FinalEx {
+		public void run() {
+			final int local = 100;
+			// 로컬 변수에는 AccessModifier나 static이 작성될 수 없다.
+				// static은 인스턴스가 먼저 올라와야하나, 메서드가 non-static이면 논리적으로 앞뒤가 맞지 않는 경우가 있다.
+			/* 메서드 내부에 클래스를 정의한 경우, 내부 클래스에서 로컬 변수를 access 할 경우,
+				변경 가능성이 있기 때문에 프로그램 제어에 문제, 보안 문제가 발생할 수 있다. */
+			// 내부 클래스에서 로컬 변수를 안전하게 access 할 수 있도록 final로 선언한다.
+		}
+	}
+	```
+
+### 추상 클래스
+ - 추상 클래스는 소프트웨어 관점으로 관리해야하는 대상 객체들이 공통되는 필드와 메서드를 추상화할 수 있고, 부모클래스로 정의할 수 있다.
+ - 부모클래스에 정의되는 메서드 중에서는 부모가 구현해서 상속해주는 메서드도 있지만, 자식클래스에서 상속받은 메서드를 반드시 재정의(Override)해서 사용하도록 강제시킬 수 있는 메서드를 정의할 수 있다.
+	- 이러한 메서드는 추상 메서드라고 한다.
+ - abstract가 선언된 메서드는 {} 없이 ;으로 메서드 선언을 종료한다.
+ - 구현 body가 없는 abstract 메서드는 객체 생성이 불가하다.
+	- 하여, 클래스 선언에 객체 생성을 할 수 없다고 선언을 해줘야 한다.
+		- class에 abstract를 지정하는 것을 말한다.
+	```java
+	public abstract class Animal {
+		int eyes, hands, feet, wings;
+		public abstract void action();
+		public void eat() {
+			System.out.println("water");
+		}
+	}
+	class Dog extends Animal {
+		// Dog는 abstract 지정을 안하였기 때문에 객체 생성이 가능하다.
+		// 객체 생성을 위해 Animal을 상속받은 새로운 class를 만들었다고 생각하면 된다.
+		// Animal의 메서드는 오버라이드 해서 사용하면 된다.
+		@Override
+		public void action() {
+			System.out.println("all action!!");
+		}
+	}
+	class Dolphin extends Animal {
+		@Override
+		public void action() {
+			System.out.println("swimming");
+		}
+	}
+	```
+	```java
+	public class AbstractTest {
+		public static void main(String[] args) {
+			// Animal dog = new Animal(); // 추상 클래스는 객체 생성이 안된다.
+			Animal dog = new Dog(); // 다형성 객체
+			dog.action(); // override된 메서드 호출
+			dog = new Dolphin();
+			dog.action();
+		}
+	}
+	```
+
 
 ## 가변 파라미터
  - 메서드의 파라미터중에서 동일한 타입의 파라미터 개수가 실행시점에 동적으로 결정되는 경우에 사용한다.
@@ -1600,7 +2168,7 @@ public class LottoTest {
 			ex.add(0.5);
 			ex.add(0.5, 3, 5, 7, 9, 11, 13, 17, 19);
 			 // 가변 파라미터는 메서드의 이름 재사용성이 높아진다는 것을 알 수 있다.
-		       // view layer의 인터페이스 구현이 simple 해진다.
+		      // view layer의 인터페이스 구현이 simple 해진다고 볼 수 있다.
 		}
 	}
 	```
@@ -1636,6 +2204,679 @@ public class LottoTest {
 			ex.add(1, 2);
 			ex.add('A', 3.14F);
 			// char, float 보다 큰 타입은 메서드(double add)를 호출한다.(promotion)
+		}
+	}
+	```
+
+
+## 접근제어자
+ - public
+	- 누구나 어디서든 접근 가능하다.
+ - protected
+	- 같은 패키지 내에 있는 대상은 접근 가능하다.
+	- 상속 관계에 있는 대상만 접근 가능하다.
+ - default
+	- 같은 패키지 내에 있는 대상만 접근 가능하다.
+	- 상속관계에 있는 대상도 접근 불가능하다.
+ - private
+	- 같은 클래스 내에서만 접근 가능하다.
+	- private 멤버필는 상속되지 않는다.
+	- private 메서드 또한 상속되지 않는다.
+	- private에 대해서 자식, 외부 class에서 접근시에는 get, set 메서드가 필요하다.
+	![접근제어자](https://blog.kakaocdn.net/dn/cRaz6Q/btrG4eRRFlu/RQ24UziUBaMQ6c3Be9KO60/img.png)  
+	![접근제어자2](https://hongong.hanbit.co.kr/wp-content/uploads/2021/09/01-%EC%9E%90%EB%B0%94%EC%9D%98-%EC%A0%91%EA%B7%BC-%EC%A0%9C%ED%95%9C%EC%9E%90_public_private-768x394.png)
+	```java
+	package lab.java.pkg1;
+
+	public class Super {
+		public String name;
+		protected String name2;
+		String name3;
+		private String name4;
+	}
+	```
+	```java
+	package lab.java.pkg1;
+
+	public class Other {
+		public void method() {
+			Super s = new Super();
+			s.name3 = "seoul"; // default는 상속관계가 있든 없든 같은 패키지 내에서만 access 가능하다.
+			System.out.println(s.name3);
+		}
+		public static void main(String[] args) {
+			Other ot = new Other();
+			ot.method();
+		}
+	}
+	```
+	```java
+	package lab.java.pkg2;
+
+	import lab.java.pkg1.Super;
+
+	public class Other2 {
+		public void method() {
+			Super s = new Super();
+			s.name = "seoul"; // public은 누구나 access 가능
+			//s.name2 = "busan" // 오류. protected는 상속관계에 있는 대상만 access 가능
+			System.out.println(s.name);
+		}
+		public static void main(String[] args) {
+			Other2 ot = new Other2();
+			ot.method();
+		}
+	}
+	```
+	```java
+	package lab.java.pkg2;
+
+	import lab.java.pkg1.Super;
+
+	public class Sub2 extends Super {
+		public Sub2() {
+			name = "dongtan";
+			// 부모클래소부터 상속을 받았기 떄문에 Sub2에 존재하지 않은 name 변수를 사용 가능하다.
+			// name 변수는 다른 패키지 및 클래스에 있지만 상속을 통해 자신의 것처럼 사용 가능하다.
+			name2 = "inchon";
+			// 접근제어자가 protected 여도 Sub2는 상속관계에 있기 때문에 사용 가능
+			// name3 = "kkk"; // 오류. default는 상속관계여도 Access 불가
+			// name4 = "jjj"; // 오류. private는 상속되지 않는다. 하여, Access 불가
+			System.out.println(name);
+			System.out.println(name2);
+		}
+		public static void main(String[] args) {
+			Sub2 s2 = new Sub2();
+		}
+	}
+	```
+
+### 싱글톤 패턴(Singleton Pattern)
+ - 일반적으로 객체를 생성하는것에 제한은 없다. 그러나 class 내에 객체가 딱 하나만 생성되어 관리되어야 하는 경우가 있다. 
+	- 예를 들어 rdbms 연결 시에 연결 수량, 메모리 등을 관리해야할 경우 등등
+ - Application 전체에서 단 한개의 객체만 생성해서 사용하고자 하는 경우에 사용한다.
+ - 싱글톤 패턴의 핵심은 생성자를 private 접근 제한해 외부에서 new 연산자로 생성자를 호출할 수 없도록 막는 것이다.
+```java
+// Student는 그냥 객체 생성에 따른 메모리 주소가 다름을 표현하기 위한 용도로 싱글톤 패턴과는 무관하게 봅시다.
+package lab.java.basic;
+
+public class Student {
+    private String sno;
+    private String name;
+    private int kor;
+    private int math;
+    private int eng;
+    public Student() {
+    	System.out.println("Student() called");
+    }
+    public Student(String sno, String name) {
+    	   this.sno=sno;
+    }
+    
+    public Student(String sno,String name, int kor, int math,int eng) {
+    	this();
+    }
+    
+    public void method1() {
+    	method2();
+    }
+    public void method2() {
+    	System.out.println("method2() called");
+    }   
+    
+	public static void main(String[] args) {
+   		// Student s1 = new Student();
+		// s1.method1();
+		Student s1 = new Student("s001", "kim", 88,80,95);
+		
+	}
+}
+```
+```java
+package lab.java.basic;
+
+public class Test {
+	public static void main(String[] args) {
+		Student s1 = new Student("0001", "kim");
+		Student s2 = new Student("0001", "kim");
+		System.out.println(s1 == s2);
+		 // false (서로 다른 Heap 메모리에 저장되어 불일치)
+		
+		//DBConnect con1 = new DBConnect();
+		 // 오류. 생성자가 private이기 때문에 객체 생성이 불가하다.
+		DBConnect con1 = DBConnect.getInstance();
+		 // static으로 선언된 메서드를 호출하여 객체 생성 진행.
+		DBConnect con2 = DBConnect.getInstance();
+		System.out.println(con1 == con2); // true
+		System.out.println(con1); // lab.java.basic.DBConnect@28a418fc
+		System.out.println(con2); // lab.java.basic.DBConnect@28a418fc
+		 // 싱글톤 패턴에서 만든 객체는 모두 메모리 주소 값이 같다.
+	}
+}
+```
+```java
+package lab.java.basic;
+
+// 이 클래스로부터는 객체가 1개만 생성된다. (=싱글톤 패턴)
+public class DBConnect {
+	private static DBConnect conn = new DBConnect();
+	
+	private DBConnect() {
+		System.out.println("RDBMS에 실제 연결은 아닙니다.");
+	}
+	
+	public static DBConnect getInstance() {
+		// 외부에서 DBConnect에 대해 객체를 생성할 수 없어, getInstance 메서드 또한 호출이 불가하다.
+		// 하여, 객체 생성 없이 메서드를 호출할 수 있도록 하기 위해 static 을 붙여줘야 한다.
+		return conn;
+	}
+}
+```
+
+
+## 상속(Inheritance)
+```java
+package lab.java.basic;
+
+class Parent {
+	int num = 0;
+	
+	public Parent() {
+		System.out.println("Parent() called");
+	}
+	
+	public void ParentMethod() {
+		System.out.println("ParentMethod() called");
+	}
+}
+class Child extends Parent {
+	public Child() {
+		// super(); // 부모클래스의 생성자를 별도로 명시하지 않으면 super()가 자동으로 추가되어 실행된다. 
+		System.out.println("Child() called");
+	}
+}
+
+public class ExtendsTest {
+	public static void main(String[] args) {
+		Child c1 = new Child();
+		 // 부모클래스의 생성자 메서드가 먼저 호출된다.
+		 // 이는 자식클래스의 생성자에 부모클래스에 생성자에 대한 호출을 하지 않으면 super()가 자동으로 추가된다.
+		    // 위 내용을 통해 부모클래스가 먼저 로드되고, 자식클래스가 로드된다는 것을 알 수 있다.
+		    // 또한 Heap 메모리 상에서도 자식객체가 생성되기전에 부모객체가 먼저 생성된다는것도 알 수 있다.
+		c1.num  += 100;
+		System.out.println(c1.num);
+		c1.ParentMethod();
+	}
+}
+```
+```java
+package lab.java.basic;
+
+class Parent {
+	int num = 0;
+	
+	public Parent(int num) {
+		this.num = num;
+		System.out.println("Parent() called");
+	}
+	
+	public void ParentMethod() {
+		System.out.println("ParentMethod() called");
+	}
+}
+class Child extends Parent {
+	public Child() {
+		// super();
+		 // 오류. 부모클래스의 생성자의 값은 자동으로 추가가 안되어 오류가 발생한다.
+		 // 부모클래스에 default 생성자가 없는 경우 자식 객체를 생성할 때 오류 발생
+		   // 오류 해결방법 1. 부모클래스에 default 생성자 정의
+		   // 오류 해결방법 2. 부모클래스에 정의된 생성자를 자식 클래스의 생성자 메서드에서 호출
+		super(3); // 오류 해결 방법2에 해당. 주석 혹은 삭제 해보기
+		System.out.println("Child() called");
+	}
+}
+
+public class ExtendsTest {
+	public static void main(String[] args) {
+		Child c1 = new Child();
+		c1.num  += 100;
+		System.out.println(c1.num);
+		c1.ParentMethod();
+	}
+}
+```
+```java
+package lab.java.basic;
+
+class Parent2 {
+	int num = 0;
+	
+	
+}
+class Child2 extends Parent2 {
+	int num = 1;
+	public void method(int num) {
+		System.out.println(num); // 100
+		 // 로컬변수가 더 우선시 된다.
+		System.out.println(this.num); // 1
+		 // 인스턴스 변수를 참조
+		System.out.println(super.num); // 0
+		 // super는 부모 클래스를 지칭
+		 // 즉, 부모클래스의 인스턴스 변수를 참조
+	}
+}
+
+public class ExtendsTest2 {
+	public static void main(String[] args) {
+		Child2 c2 = new Child2();
+		c2.method(100);
+	}
+}
+```
+```java
+package lab.java.basic;
+
+class Parent2 {
+	int num = 0;
+	
+	public Parent2() {
+		System.out.println("Parent2() called");
+	}
+	public Parent2(int num) {
+		this.num = num;
+		System.out.println("Parent2(int) called");
+	}
+}
+class Child2 extends Parent2 {
+	int num = 1;
+	
+	public Child2() {
+		//System.out.println("Child Called"); // 주석 혹은 삭제
+		super(333);
+		 // 생성자 메서드에서 부모 또는 자신의 다른 생성자 메서드를 호출할 때는 생성자 메서드 내부의 첫번째 줄에서만 호출할 수 있다.
+		super(); // 오류
+		 // 생성자 메서드에서 부모 또는 자신의 다른 생성자 메서드를 호출할 때는 한번만 호출할 수 있다.
+	}
+	
+	public void method(int num) {
+		System.out.println(num); // 100
+		System.out.println(this.num); // 1
+		System.out.println(super.num); // 0
+	}
+}
+
+public class ExtendsTest2 {
+	public static void main(String[] args) {
+		Child2 c2 = new Child2();
+		c2.method(100);
+	}
+}
+```
+```java
+class MyMath extends Math {}
+class MySystem extends System {}
+ // 시스템 동작에 영향을 끼칠 수 있는 대상에 대해서는 상속이 불가능하다.
+```
+
+### UpCasting, DownCasting 및 다형성 개념
+ - UpCasting
+	- 자식클래스가 부모클래스로 Casting 되는 것을 말함.
+ - DownCasting
+	- 부모클래스가 자식클래스로 Casting 되는 것을 말함.
+	```java
+	package lab.java.basic;
+
+	class Parent5 {
+		int a=1, b=2;
+		public void method1() {
+			System.out.println("Parent5's method1() called");
+		}
+		public void method2() {
+			System.out.println("Parent5's method2() called");
+		}
+	}
+	class Child5 extends Parent5 {
+		int a=3, x=4;
+		public void method1() {
+			System.out.println("Child5's method1() called");
+		}
+		public void method3() {
+			System.out.println("Child5's method3() called");
+		}
+	}
+	public class ExtendsTest5 {
+		public static void main(String[] args) {
+			Parent5 p = new Parent5();
+			// 부모클래스 타입의 객체는 자식클래스의 멤버와 메서드를 호출할 수 없습니다.
+			// 부모클래스 타입으로 선언되고 생성된 객체는 DownCasting 되지 못한다.
+			Child5 c = new Child5();
+			// 부모로부터 상속받은 필드와 메서드를 호출 및 사용할 수 있기 때문에 UpCasting은 필요하지 않다.
+			System.out.println(c.a);
+			c.method1();
+			p = new Child5();
+			// 이 때, p 객체는 다형성 객체이다.
+				// 생성된 자식 객체가 부모타입으로 UpCasting 됨.
+			// 즉, 부모클래스는 객체 생성 시, 자식클래스 중 하나로 객체를 생성할 수 있다.
+			System.out.println(p.a); // 1, 멤버필드는 선언자 우선
+			p.method1(); // Child5's method1() called, override 메서드 우선
+			System.out.println(((Child5)p).x);
+			((Child5)p).method3();
+			// DownCasting을 하지 않으면, p는 Child5가 아닌 Parent5를 참조한다.
+			// UpCasting 된 객체는 DownCasting이 가능하다.
+			
+			// 아래 내용을 보고 생각해보자. (아래 내용 모두 위와 같은 다형성 객체이다.)
+			Parent5 p1 = new Child5();
+			Object o = new String();
+			o = Integer.valueOf(3);
+		}
+	}
+	```
+	```java
+	package lab.java.basic;
+
+	public class PloyTest {
+		public void method(Object o) { // 자식객체가 전달될 경우 자동으로 UpCasting 된다.
+			//o.length(); // 오류. UpCasting이 되었기 때문에 String 객체의 메서드를 쓸 수 없다.
+			if(o instanceof String) {
+				/* o가 String인지? Student인지? 알 수 없기 때문에
+				instanceof 라는 연산자를 통해 String 객체인지 검사한다. */
+				System.out.println(((String)o).length());
+				// Object → String으로 DownCasting 진행.
+				// 역시 UpCasting이 되었기 때문에 DownCasting이 가능하다.
+			} else if (o instanceof Student) {
+				
+			}
+		}
+		public static void main(String[] args) {
+			PloyTest test = new PloyTest();
+			test.method(new String("java")); // Object 자식클래스인 String을 전달한 것이다.
+			test.method(new Student());
+			
+			// instanceof 연산자 활용
+			Object o = new Object();
+			String s = new String("Java");
+			Student s1 = new Student();
+			System.out.println(o instanceof Object);
+			// true
+			// 객체가 자기 자신을 검사하면 true
+			System.out.println(o instanceof String);
+			// false
+			// 부모객체는 자식클래스 타입이 될 순 없다.
+			// 부모객체 is not a 자식클래스타입
+			System.out.println(s instanceof Object);
+			// true
+			// 상속관계가 있으면 true
+			// 부모 자식 관계를 is a 관계라고 한다.
+			// 자식객체 is a 부모클래스타입
+			//System.out.println(s1 instanceof String);
+			// 상속관계가 아니기 때문에 호환되지 않는 타입이라 컴파일 오류 발생.
+		}
+	}
+	```
+
+
+## 오버라이딩(Overriding)
+ - 기존 사용중인 프로그램은 유지하면서 기능을 덧붙여서 새로운 기능을 만들어야하는 사항의 개념에서 활용 가능하다.
+ - 규칙
+ 	- AccessModifier는 동일하거나 access 범위가 더 넓은 modifier 선언
+	- 리턴타입은 반드시 동일해야 한다.
+	- 메서드이름은 반드시 동일해야 한다.
+	- 파라미터의 순서, 개수, 타입도 동일해야 한다.
+	- 부모클래스에 throws 예외클래스가 선언된 경우, 자식클래스에서 throws 예외클래스 선언을 생략할 수 있다.
+		- throws 예외클래스를 선언하는 경우에는 부모클래스와 동일하게 선언해야 하다.
+		- 선언된 예외클래스보다 상위 예외 클래스를 선언할 수 없다.
+	- 자식클래스에서 오버라이딩(Overriding) 메서드 1개만 정의할 수 있다.
+	```java
+	package lab.java.basic;
+
+	class Parent3 {
+		public void action() {
+			
+		}
+		public void action2(int type, String msg) {
+			System.out.println("Parent's action2() called");
+		}
+	}
+	class Child3 extends Parent3 {
+		//private void action() {
+		// 더 좁은 AccessModifier 이기 때문에 오류.
+		//public int action() {
+		// 리턴 타입이 다르기 때문에 오류
+		//public void action2() {
+		// 메서드 이름이 다르면 오버라이딩이 아닌 그냥 다른 메서드이다.
+		public void action() {	
+		
+		}
+		
+		public void action2(String msg, int type) {
+		// 오버라이드 메서드가 아니며, 오버로드 메서드이다.
+		// 비록 다른 클래스지만 상속관계이기 때문에 오버로딩이 가능하다.
+		   // 부모클래스의 데이터도 자신의 클래스처럼 쓰기 때문에..
+			System.out.println("Child's overload action2() called");
+		}
+		
+		public void action2(int type, String msg) {
+		// 오버라이드 메서드이다.
+			System.out.println("Child's override action2() called");
+		}
+	}
+		
+	public class ExtendsTest3 {
+		public static void main(String[] args) {
+			Child3 c3 = new Child3();
+			c3.action2(0, null); // 오버라이드 메서드 호출
+			c3.action2(null, 0); // 오버로드 메서드 호출
+		}
+	}
+	```
+
+
+## 인터페이스(interface)
+ - 프린터가 있을 때, 장치는 같아도 회사별로 드라이버는 달리 쓰는 경우가 있다.
+	- 이러한 경우에, 회사별로 매번 프로그램을 새로 만드는 것도 상당한 낭비가 있다.
+	- 하여, 장치는 같기 때문에 기본적인 프로그램은 같이 쓰고 회사별로(=드라이버별로) 각각에 맞게 프로그램만 별도로 개발하는 것이 훨씬 낭비가 적다.
+		- 이러한 개념을 인터페이스(interface)라고 한다.
+ - 선언과 구현을 나눠 인터페이스로 표준을 수립하고, 각각의 상황에 맞게 구현을 하는 개념이다.
+	- 추가적인 예시로는 프렌차이즈 음식점도 예를 들 수 있다.
+		- 지역마다 약간의 차이는 있을지언정 대체로 맛은 동일하다.
+	- 또 다른 예시로는 대표적으로 jdbc driver는 대부분 인터페이스로 구현되어 있다.
+		- DB의 종류마다 특성이 달라도 모두 jdbc driver가 기반이다.
+ - 인터페이스는 결합도가 낮다.
+	- 결합도가 낮기 때문에 변경, 확장, 유지보수가 용이하다.
+ - 특징(JDK8 이전)
+	- 멤버필드는 public final static 필드만 가능하다.
+	- 오직 추상 메서드만 선언 할 수 있다.
+ - 특징(JDK8 이후)
+	- 함수적 프로그래밍 언어(데이터 분석, 전처리 등)의 기능을 위해서 default 선언되는 메서드(구현 body를 가질 수 있다.) 를 정의할 수 있게 되었다.
+		- 또한 static 선언되는 메서드(구현 body를 가질 수 있다.)도 정의할 수 있다.
+		- private 메서드도 정의할 수 있다.
+ - 특징(공통)
+	- 인터페이스는 클래스는 상속받을 수 없다.
+	- 인터페이스는 
+ - 선언 방식
+	```plaintext
+	AccessModifier inteface 인터페이스이름 {...}
+	AccessModifier inteface 인터페이스이름 extends 부모인터페이스, 부모인터페이스... {...}
+	```
+	```java
+	public interface TV {
+		String TYPE = "4K";
+		 // 컴파일시점(바이트코드를 생성할 때) 자동 public static final 필드로 선언된다.
+		public void on();
+		 // 컴파일시점에 자동으로 abstract가 선언이 되어 body를 가질 수 없다.
+		public void off();
+		public default void defaultMethod() {
+			System.out.println("인터페이스의 default 메서드");
+		}
+		public static void staticMethod() {
+			System.out.println("인터페이스의 static 메서드");
+		} // default, static은 추상메서드로 동작 안해서 body를 가질 수 있다.
+	}
+	```
+	```java
+	public class InterfaceTest {
+		public static void main(String[] args) {
+			System.out.println(TV.TYPE);
+			 /* 객체 생성 없이, 인터페이스 이름으로 접근하였기 때문에
+				static으로 자동 선언되는 것을 알 수 있다. */
+			 //TV.TYPE = "RGB"; // 오류.
+			 // 별도 선언 없이도 final로 동작하는 것을 알 수 있다.
+			
+			//TV tv = new TV(); // 오류.
+			 // 구현 body가 없는 추상 메서드 때문에 인스턴스(객체) 생성이 불가하다.
+			
+			TV tv = new SamSungTV();
+			 // 인터페이스에 대한 인스턴스를 생성하려면 구현 클래스로 생성해야 한다.
+			 // abstract 다루듯이, 별도의 class로 생성해서 override 된 메서드를 호출해야한다는 얘기이다.
+			tv.defaultMethod();
+			tv.on();
+		}
+	}
+	```
+	```java
+	public class SamSungTV implements TV {
+		@Override
+		public void on() {
+			System.out.println("전원켜짐");
+		}
+		@Override
+		public void off() {
+			System.out.println("전원꺼짐");
+		}
+	}
+	```
+	- 아래는 다른 예제임.
+	```java
+	interface Vehicle {
+
+	}
+	interface Car {
+		
+	}
+	public interface Bus extends Vehicle, Car {
+		// 인터페이스는 다중 상속이 가능하다.
+		// 클래스를 상속 받는게 아니라 인터페이스를 상속 받아야한다.
+		   // 인터페이스는 인터페이스만 상속이 가능하다.
+	}
+	```
+
+
+## 클래스 중첩 선언
+ - 클래스 내부에 클래스를 정의할 수 있다.
+ - 클래스의 멤버로서 클래스 정의 할 수 있다.
+ 	- Inner Member 클래스, static inner 클래스
+	- Inner Member 클래스는 Outer 클래스의 모든 멤버에 제한 없이 access 가능하다.
+	- Outer 클래스에서 Inner Member 클래스의 멤버를 사용하려면 객체를 생성해서 객체로 access 해야한다.
+	- Inner Member 클래스는 protected 또는 private을 선언할 수 있다.
+	```java
+	package lab.java.basic;
+
+	class Outer {
+		// OuterClass는 default 외에 어떠한 접근제어자도 선언될 수 없다. 
+		private int a=5;
+		protected class Inner {
+			// Inner는 MemberClass이기 때문에 접근제어자 선언이 가능하다.
+			private int a=5;
+			public void innerMethod() {
+				System.out.println(a); // 5
+				System.out.println(Outer.this.a); // 2
+				 // static은 아니지만 outer class에 접근할때는 위와 같이 해야한다.
+				outerMethod();
+				 // inner class는 객체 생성 없이 outer class에 접근 가능하다.
+				 // 변수 a는 inner와 outer 둘다 존재하기 때문에 this 를 쓴것이다.
+			}
+		} // 컴파일되면 Outer$Inner.class로 생성된다.
+		public void outerMethod() {
+			//innerMethod();
+			 // 오류. outer class에서 inner class에 접근할 때는 객체를 생성해야 한다.
+			Inner inn = new Inner();
+			inn.innerMethod();
+		}
+	}
+	public class InnerClassTest {
+		public static void main(String[] args) {
+			Outer o = new Outer();
+			Outer.Inner inner1 = new Outer().new Inner(); // 방법1
+			Outer.Inner inner2 = o.new Inner(); // 방법2
+			 // inner 메서드는 outer 클래스 내부에 있기 때문에 객체 생성 시, 위와 같이 해야 한다.
+		}
+	}
+	```
+	```java
+	class Outer2 { 
+		private int a=5;
+		static int b = 3;
+		static class Inner2 {
+			// Inner는 MemberClass이기 때문에 static 선언이 가능하다.
+			static int num=5;
+			public static void innerMethod() {
+				//System.out.println(a); // non-static이기 때문에 호출 불가
+				System.out.println(b);
+			}
+		}
+		public void outerMethod() {
+			Inner2.innerMethod();
+		}
+	}
+	public class InnerClassTest2 {
+		public static void main(String[] args) {
+			Outer2.Inner2.innerMethod();
+			// static이기 때문에 class명으로 호출 가능하다.
+		}
+	}
+	```
+ - 클래스의 멤버 메서드 내부에 클래스 정의 할 수 있다.
+ 	- Inner Local 클래스
+	- Inner Local 클래스는 선언된 메서드 내부에서만 객체 생성할 수 있고, 사용할 수 있다.
+	```java
+	class Outer3 { 
+		private int a=2;
+		public void outerMethod() {
+			int local = 100;
+			class Inner {
+				int num = 5;
+				public void innerMethod() {
+					System.out.println(num);
+					System.out.println(local);
+				}
+			}
+		}
+		public void outerMethod2() {
+			//Inner in = new Inner();
+			 // 오류. 위 Inner Class는 로컬 변수와 동일한 의미로 활용되기 때문에 객체 생성이 불가하다.
+		}
+	}
+	public class InnerClassTest3 {
+		public static void main(String[] args) {
+			
+		}
+	}
+	```
+ - 클래스는 **선언 → 구현 → 객체** 생성 과정에서 선언을 생략하고 이름 없는 클래스로써 객체 생성과 동시에 구현 할 수 있다.
+ 	- 익명 클래스
+	```java
+	public class AnonymousTest {
+		public static void main(String[] args) {
+			TV lg = new TV() {
+				// 추상 클래스에 대해서 객체 생성과 초기화를 익명 클래스로 진행
+				@Override
+				public void on() {
+					
+				}
+				@Override
+				public void off() {
+					
+				}
+			};
+			lg.on();
+			lg.off();
+			Animal bird = new Animal() {
+				@Override
+				public void action() {
+					
+				}
+			};
+			bird.action();
 		}
 	}
 	```
