@@ -52,15 +52,25 @@
 	18-8. [추상 클래스](#추상-클래스)
  19. [가변 파라미터](#가변-파라미터)
  20. [Overload(중복 정의)](#overload중복-정의)
- 21. [접근제어자](#접근제어자)  
+ 21. [접근제한자](#접근제한자)  
 	21-1. [싱글톤 패턴(Singleton Pattern)](#싱글톤-패턴singleton-pattern)
  22. [상속(Inheritance)](#상속inheritance)  
 	22-1. [UpCasting, DownCasting 및 다형성 개념](#upcasting-downcasting-및-다형성-개념)
  23. [오버라이딩(Overriding)](#오버라이딩overriding)
  24. [인터페이스(interface)](#인터페이스interface)
  25. [클래스 중첩 선언](#클래스-중첩-선언)
+ 26. [라이브러리와 모듈](#라이브러리와-모듈)
+ 27. [예외처리](#예외처리)  
+	27-1. [사용자 정의 예외처리 만들어보기(CustomException)](#사용자-정의-예외처리-만들어보기customexception)
+ 28. [래퍼 클래스](#래퍼-클래스)
+ 29. [제네릭(Generic)](#제네릭generic)
+ 30. [컬렉션(Collection)](#컬렉션collection)  
+	30-1. [장바구니 만들기](#장바구니-만들기)
+ 31. [JDBC 프로그래밍](#jdbc-프로그래밍)
  - [기타 - main 메서드에 인수 주기](#기타---main-메서드에-인수-주기)
  - [기타 - Java의 메서드 호출 방식](#기타---java의-메서드-호출-방식)
+ - [기타 - Object 및 System 객체의 메서드들](#기타---object-및-system-객체의-메서드들)
+ - [기타 - 날짜/시간 관련 클래스들](#기타---날짜시간-관련-클래스들)
 
 ---
 <br/><br/>
@@ -494,7 +504,7 @@ public class ClassEx2 {
 	public static void main(String[] args) {
 		ClassEx2 ex = new ClassEx2();
 		System.out.println(ex.PORT); // 9090
-		// ex.PORT = 5000; // 변경 불가(에러 발생)
+		// ex.PORT = 5000; // 변경 불가(오류 발생)
 		
 		ClassEx2 ex2 = new ClassEx2();
 		System.out.println(ex2.PORT); // 9000
@@ -670,7 +680,7 @@ public class ClassEx3 {
 		 // a=5, b=7, result=10 
 		System.out.printf("~a=%d \n", ~a); // 1의 보수 연산자
 		 // ~a=-6 
-		System.out.printf("!a=%d \n", !a); // 에러
+		System.out.printf("!a=%d \n", !a); // 오류
          // 논리부정 연산자는 조건식 또는 boolean 타입에만 적용 가능하다.
 		
 		boolean success = false;
@@ -783,12 +793,12 @@ public class ClassEx3 {
 		String s = null;
 		 // 참조자료형에 한해서 데이터가 결정되지 않으면 null을 넣을 수 있다.
 		 // 참조 변수만 선언하고 객체가 생성되지 않음.
-		System.out.println((s.length()==0 && s==null)); // 에러
-		System.out.println((s.length()==0 || s==null)); // 에러
-		System.out.println((s==null && s.length()==0)); // 에러
-		 // 위 3개는 객체가 생성되지 않고 사용(s.length())하려고 해서 NullPointerExeption 에러 발생
-		 // NullPointerExeption는 Runtime 에러가 발생함.
-		 	// Runtime 에러 : 프로그램 실행시점에 발생하는 오류 
+		System.out.println((s.length()==0 && s==null)); // 오류
+		System.out.println((s.length()==0 || s==null)); // 오류
+		System.out.println((s==null && s.length()==0)); // 오류
+		 // 위 3개는 객체가 생성되지 않고 사용(s.length())하려고 해서 NullPointerExeption 오류 발생
+		 // NullPointerExeption는 Runtime 오류가 발생함.
+		 	// Runtime 오류 : 프로그램 실행시점에 발생하는 오류 
 		System.out.println((s==null || s.length()==0));
 		 // s==null이 true이기 때문에 s.length가 실행될 필요가 없어 오류가 미발생.
 	}
@@ -800,9 +810,9 @@ public static void main(String[] args) {
 	int a = 3, b = 5;
 
 	// 조건식? True 표현식1 : False 표현식2
-	int result = (a > b ? 99.9 : 90); // 에러
+	int result = (a > b ? 99.9 : 90); // 오류
 	 // 연산식이 여러개인 경우(조건식 제외) 자동으로 가장 큰 타입으로 promotion 발생
-	 // int → double로 promotion이 발생하는데 result가 double 타입이 아니기 때문에 에러 발생
+	 // int → double로 promotion이 발생하는데 result가 double 타입이 아니기 때문에 오류 발생
 	double result2 = (a > b ? 99.9 : 90);
      // a가 b보다 큰 경우, result2에 99.9 할당
 	 // a가 b보다 크지 않은 경우, result2에 90 할당
@@ -1280,7 +1290,7 @@ int[] nums[];
 nums = new int[5][7];
 nums = new int[5][]; // 가능
  // 1차원 배열의 개수를 고정시키고, 각각의 2차원 배열 개수를 동적으로 생성할 수 있다.
-nums = new int[][5]; // 에러 발생
+nums = new int[][5]; // 오류 발생
 nums = new int[][] {{1,2}, {4,5,6,7}, {8,9,10,11,12}};
 ```
 ```java
@@ -1310,7 +1320,7 @@ public static void main(String[] args) {
 	}
 
 	System.out.println(nums[7]);
-	 // ArrayIndexOutOfBoundsException 에러 발생
+	 // ArrayIndexOutOfBoundsException 오류 발생
 	 	// RunTime Exception이다.
 	 // 배열의 지정된 index 범위 밖의 항목을 찾을 때, 발생하는 오류이다.
 }
@@ -1325,7 +1335,7 @@ public static void main(String[] args) {
 	System.out.println(strins[1]);
 	 // index 1번에는 할당된 값이 없어서 Null
 	System.out.println(strins[1].length);
-	 // Null에 대한 조회를 했기 때문에 NullPointerException 에러 발생.
+	 // Null에 대한 조회를 했기 때문에 NullPointerException 오류 발생.
 
 	String[] strings2 = new String[] {new String("korea"), new String("seoul")};
 	 // 위와 같이도 Heap 메모리에 데이터를 할당 할 수도 있다.
@@ -1740,7 +1750,7 @@ public static void main(String[] args) {
 			- void
 				- 리턴타입이 없을 경우, 사용.
 		- throws 예외클래스타입은 선택적으로 선언 가능하다.
-			- 기능 동작 시, 에러가 발생하는 경우가 있는데 에러로 인해 프로그램이 멈추는 것이 아닌 에러 메세지를 반환해주고자 할 때 사용.
+			- 기능 동작 시, 오류가 발생하는 경우가 있는데 오류로 인해 프로그램이 멈추는 것이 아닌 오류 메세지를 반환해주고자 할 때 사용.
  - 객체 생성 및 사용
 	```plaintext
 	클래스타입 객체 = new 생성자(); // 객체 생성
@@ -2017,6 +2027,18 @@ public class LottoTest {
 	- 외부 메서드 내부에서 외부 필드 또는 메서드를 사용할 경우 static 이거나 non-static인 경우에는 객체를 생성해서 사용해야 한다.
 	- static initialize block은 static {...} 와 같이 생성한다.
 		- static 메서드보다 수행이 먼저 이뤄진다.
+	```plaintext
+	static 멤버필드
+	 - 전역변수
+	 - 객체생성 없이 클래스이름으로 사용 가능
+	static 메서드
+	 - 전역변수를 변경, 처리하는 기능
+	 - 객체생성 없이 클래스이름으로 메서드 호출 가능
+	static {}
+	 - 가장 먼저 초기화되는 코드, 영역
+	static 중첩 클래스
+	 - 멤버들이 static인 경우
+	```
 	```java
 	public class StaticEx {
 		int n1;
@@ -2056,6 +2078,13 @@ public class LottoTest {
  - 내부 클래스에 선언
 
 ### final
+ - 요약
+	```plaintext
+	final 멤버필드 : 상수
+	final 메서드 : override 할 수 없는 메서드
+	final 클래스 : 자식클래스 생성 불가, 상속 받을 수 없는 클래스
+	final 로컬변수 : 상수, local Inner 클래스에서 access 할 수 있다.
+	```
  - 클래스에 선언
 	- 종단 클래스라는 의미가 된다.
 		- 즉, 하위에 상속 및 확장이 불가능하다.
@@ -2105,6 +2134,15 @@ public class LottoTest {
  - 구현 body가 없는 abstract 메서드는 객체 생성이 불가하다.
 	- 하여, 클래스 선언에 객체 생성을 할 수 없다고 선언을 해줘야 한다.
 		- class에 abstract를 지정하는 것을 말한다.
+	```plaintext
+	abstract 클래스
+	 - abstract 메서드가 정의되어 있어서 사용
+	 - 객체 생성이 불가
+	abstract 메서드
+	 - 구현 body x
+	 - 상속 받은 자식클래스에서 반드시 구현하도록 강제
+	 - 자식클래스들이 유니크한 기능을 구현해야할 때 사용
+	```
 	```java
 	public abstract class Animal {
 		int eyes, hands, feet, wings;
@@ -2182,7 +2220,7 @@ public class LottoTest {
 	- 리턴타입은 동일하거나 동일하지 않아도 된다.
 	- 메서드 이름은 동일해야한다.
 	- 파라미터의 순서, 타입, 개수 중에 하나는 반드시 달라야한다.
-		- 파라미터의 순서, 타입, 개수는 모두 일치하면서 리턴타입만 다르게 선언하면 에러이다.
+		- 파라미터의 순서, 타입, 개수는 모두 일치하면서 리턴타입만 다르게 선언하면 오류이다.
 	```java
 	public class OverloadEx {
 		public void add(int a, int b) {
@@ -2209,7 +2247,7 @@ public class LottoTest {
 	```
 
 
-## 접근제어자
+## 접근제한자
  - public
 	- 누구나 어디서든 접근 가능하다.
  - protected
@@ -2223,8 +2261,8 @@ public class LottoTest {
 	- private 멤버필는 상속되지 않는다.
 	- private 메서드 또한 상속되지 않는다.
 	- private에 대해서 자식, 외부 class에서 접근시에는 get, set 메서드가 필요하다.
-	![접근제어자](https://blog.kakaocdn.net/dn/cRaz6Q/btrG4eRRFlu/RQ24UziUBaMQ6c3Be9KO60/img.png)  
-	![접근제어자2](https://hongong.hanbit.co.kr/wp-content/uploads/2021/09/01-%EC%9E%90%EB%B0%94%EC%9D%98-%EC%A0%91%EA%B7%BC-%EC%A0%9C%ED%95%9C%EC%9E%90_public_private-768x394.png)
+	![접근제한자](https://blog.kakaocdn.net/dn/cRaz6Q/btrG4eRRFlu/RQ24UziUBaMQ6c3Be9KO60/img.png)  
+	![접근제한자2](https://hongong.hanbit.co.kr/wp-content/uploads/2021/09/01-%EC%9E%90%EB%B0%94%EC%9D%98-%EC%A0%91%EA%B7%BC-%EC%A0%9C%ED%95%9C%EC%9E%90_public_private-768x394.png)
 	```java
 	package lab.java.pkg1;
 
@@ -2279,7 +2317,7 @@ public class LottoTest {
 			// 부모클래소부터 상속을 받았기 떄문에 Sub2에 존재하지 않은 name 변수를 사용 가능하다.
 			// name 변수는 다른 패키지 및 클래스에 있지만 상속을 통해 자신의 것처럼 사용 가능하다.
 			name2 = "inchon";
-			// 접근제어자가 protected 여도 Sub2는 상속관계에 있기 때문에 사용 가능
+			// 접근제한자가 protected 여도 Sub2는 상속관계에 있기 때문에 사용 가능
 			// name3 = "kkk"; // 오류. default는 상속관계여도 Access 불가
 			// name4 = "jjj"; // 오류. private는 상속되지 않는다. 하여, Access 불가
 			System.out.println(name);
@@ -2375,6 +2413,16 @@ public class DBConnect {
 
 
 ## 상속(Inheritance)
+ - 클래스 상속은 단일 상속만 지원
+	- 한번에 여러개를 상속받을 수 없다는 말이다.
+ - 인터페이스 상속은 복수 상속 지원
+	- 한번에 여러개를 상속받을 수 있다.
+ - private 멤버와 생성자 메서드는 상속되지 않는다.
+ - 자식클래스에서 부모와 동일한 이름의 필드를 참조할때 super 키워드를 사용한다.
+ - 자식클래스에서 상속받은 부모의 멤버 메서드를 재정의할 수 있다.
+	- 이를 오버라이드(Override)라고 한다.
+	- 자식클래스에서 재정의 메서드(Override)는 1번만 선언될 수 있다.
+ - 자식클래스에서 명시적으로 부모의 생성자 메서드를 호출해서 부모로부터 상속받은 멤버를 초기화 할 수 있다. 
 ```java
 package lab.java.basic;
 
@@ -2519,10 +2567,21 @@ class MySystem extends System {}
 ```
 
 ### UpCasting, DownCasting 및 다형성 개념
+ - 다형성 객체
+	```plaintext
+	부모클래스 객체 = new 자식클래스(); // UpCasting 자동 발생
+	인터페이스 객체 = new 구현클래스();
+	```
+	- 다형성 객체는 부모클래스에 선언된 필드만 access 가능하다.
+		- 자식클래스에 선언된 필드에 access하려면 DownCasting해서 access 해야한다.
+	- 다형성 객체는 부모 클래스에 선언된 메서드만 호출한다.
+		- 그러나 자식 클래스의 override된 메서드가 있는 경우 해당 메서드를 우선적으로 호출한다.
+	- 다형성 객체가 자식 클래스에 선언된 메서드를 호출하려면 DownCasting 해서 호출해야 한다.
  - UpCasting
 	- 자식클래스가 부모클래스로 Casting 되는 것을 말함.
  - DownCasting
 	- 부모클래스가 자식클래스로 Casting 되는 것을 말함.
+	- UpCasting이 발생한 경우에만 DownCasting이 가능하다.
 	```java
 	package lab.java.basic;
 
@@ -2681,8 +2740,7 @@ class MySystem extends System {}
 		- 지역마다 약간의 차이는 있을지언정 대체로 맛은 동일하다.
 	- 또 다른 예시로는 대표적으로 jdbc driver는 대부분 인터페이스로 구현되어 있다.
 		- DB의 종류마다 특성이 달라도 모두 jdbc driver가 기반이다.
- - 인터페이스는 결합도가 낮다.
-	- 결합도가 낮기 때문에 변경, 확장, 유지보수가 용이하다.
+ - 인터페이스는 상수와 서비스 목록(abstract 메서드), 구성 요소로 가지는 참조 타입이다.
  - 특징(JDK8 이전)
 	- 멤버필드는 public final static 필드만 가능하다.
 	- 오직 추상 메서드만 선언 할 수 있다.
@@ -2691,8 +2749,12 @@ class MySystem extends System {}
 		- 또한 static 선언되는 메서드(구현 body를 가질 수 있다.)도 정의할 수 있다.
 		- private 메서드도 정의할 수 있다.
  - 특징(공통)
-	- 인터페이스는 클래스는 상속받을 수 없다.
-	- 인터페이스는 
+	- 인터페이스는 클래스는 다중 상속이 가능하다.
+	- 인터페이스는 인스턴스(객체) 생성이 불가하다.
+	- 인터페이스는 결합도가 낮다.
+		- 결합도가 낮기 때문에 변경, 확장, 유지보수가 용이하다.
+	- 선언과 개발을 따로하기 때문에 2원화된 구조로 설계, 개발 진행이 가능하다.
+	- 표준화에 사용되는 방식이다.
  - 선언 방식
 	```plaintext
 	AccessModifier inteface 인터페이스이름 {...}
@@ -2772,10 +2834,10 @@ class MySystem extends System {}
 	package lab.java.basic;
 
 	class Outer {
-		// OuterClass는 default 외에 어떠한 접근제어자도 선언될 수 없다. 
+		// OuterClass는 default 외에 어떠한 접근제한자도 선언될 수 없다. 
 		private int a=5;
 		protected class Inner {
-			// Inner는 MemberClass이기 때문에 접근제어자 선언이 가능하다.
+			// Inner는 MemberClass이기 때문에 접근제한자 선언이 가능하다.
 			private int a=5;
 			public void innerMethod() {
 				System.out.println(a); // 5
@@ -2854,6 +2916,7 @@ class MySystem extends System {}
 	```
  - 클래스는 **선언 → 구현 → 객체** 생성 과정에서 선언을 생략하고 이름 없는 클래스로써 객체 생성과 동시에 구현 할 수 있다.
  	- 익명 클래스
+	- 추상 클래스 및 인터페이스는 객체 생성이 불가하기 때문에 익명 클래스로 만들고 메서드를 오버라이드 해서 사용할 수 있다.
 	```java
 	public class AnonymousTest {
 		public static void main(String[] args) {
@@ -2881,6 +2944,677 @@ class MySystem extends System {}
 	}
 	```
 
+
+## 라이브러리와 모듈
+```java
+package pack1;
+
+public class A {
+	public void method() {
+		System.out.println("A.method() called");
+	}
+}
+```
+```java
+package pack2;
+
+public class B {
+	public void method() {
+		System.out.println("B.method() called");
+	}
+}
+```
+ - jar 파일 만들기(프로젝트 Export, 라이브러리 추출)
+	- Eclipse
+		- 프로젝트 선택 → Export → JAVA → JAR file → 패키지 선택 
+	- cmd에서
+		- jar 명령어로...
+
+ - 아래서부터는 별도의 프로젝트에 구성
+```java
+package lab.java.baisc;
+
+import pack1.A;
+import pack2.B;
+ // jar 파일 import 안하면 오류가 발생함.
+
+public class Main {
+	public static void main(String[] args) {
+		A a = new A();
+		a.method();
+		
+		B b = new B();
+		b.method();
+	}
+}
+```
+ - jar 파일 import
+	- Eclipse
+		- 프로젝트 선택 → Build Path → Build Configuration → Libraries → classPath → Add External JARs... → 위에서 만든 jar 파일 선택 후 apply
+	- cmd에서
+		- javac -classpath .;C:\Users\User\java-test\Day4\dist\my_lib.jar Main.java
+			- 파일 실행 시에도 classpath 옵션을 줘야 export한 jar 파일을 인식한다.
+				- java -classpath .;C:\Users\User\java-test\Day4\dist\my_lib.jar Main.java
+					- classpath 옵션을 빼고도 해보자.
+					- 매번 옵션 주기 번거로우면 환경변수를 이용한 방법도 있다.
+ - 위와 비슷한 방식으로 모듈로 export 해서 하는 방법도 있다.
+	- 단, 별도 jar 파일로 추출하는게 아니라 프로젝트를 다른 프로젝트에 공유해서 쓰는 방식으로...
+		- jar 방식도 있고...
+	- 책이나 인터넷으로 봅시다.
+
+
+## 예외처리
+ - 오류와 에러를 구분해야 한다.
+	- 에러(Error) : 하드웨어적, 물리적, 프로그램적으로 처리가 불가능
+	- 오류(Exception) : 소프트웨어적, 논리적, 프로그램적으로 처리가 가능
+		- CheckedException : JRE 외부에 access 및 통신 관련(IO, Socket, DB 관련 예외)
+		- UnCheckedException : JRE 내부에서 실행(NullPointerException, ArrayIndexOutOfBoudsException...)
+ - 위 오류와 에러에 대해서 Java에서는 java.lang.Trowable에서 관리한다.
+	```plaintext
+	java.lang.Trowable
+		|---Error
+			|---VirtualMachineError
+			...
+		|---Exception
+			|---RuntimeException
+			|---IOException
+			....
+	```
+ - Exception 처리 방식
+	- declare
+		- Exception을 처리하지 않고 호출한 곳의 예외를 전가 시킴
+		- throws
+	- handle
+		- Exception을 처리
+		- try ~ catch
+		- try ~ catch ~ finally
+		- try ~ finally
+	```plaintext
+	try {
+		예외 발생 가능성이 있는 코드;
+	} catch(예외클래스 객체) {
+		예외 처리
+	} catch(예외클래스 객체) {
+		예외 처리
+	} finally {
+		예외 발생하든 안하든 무조건 수행(주로 resouce 정리 작업을 함.)
+	}
+ - throw 키워드가 있다.
+	- 예외를 발생시킬 때 사용한다.
+	```plaintext
+	thorw new 예외클래스(message);
+	```
+ - API에서 제공하는 예외클래스를 상속받아서 사용자 정의 예외클래스를 만들 수 있다.
+    ```plaintext
+	class CustomException extends Exception {
+		//멤버필드
+		CUstomException(message) { // 생성자
+			super(message);
+			...
+		}
+		//멤버 메서드
+	}
+	```
+	```java
+	public class EvenTest {
+		public static void main(String[] args) {
+			System.out.println("main start");
+			int num = -1;
+			try {
+				num = Integer.parseInt(args[0]);
+				System.out.println("Exception 발생하는 문장 다음에 코드는 실행되지 않습니다.");
+			} catch(NumberFormatException ex) {
+				System.out.println(ex.getMessage());
+				 // Exception 원인이 되는 내용 출력
+				ex.printStackTrace();
+				 // Exception 발생의 원인을 상세하게 추적
+				System.out.println("args에 문자를 넣어 NumberFormatException이 발생합니다.");
+			} catch(ArrayIndexOutOfBoundsException ex) {
+				System.out.println("args에 아무런 값도 안넣으면 ArrayIndexOutOfBoundsException이 발생합니다.");
+			} catch(NumberFormatException | ArrayIndexOutOfBoundsException ex) { 
+				System.out.println("2개의 예외를 한번에 처리할 수도 있습니다.");
+				 // 해당 예외 TEST 해보려면 위 catch 문들 모두 주석 필요.
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			} finally {
+				System.out.println("resource 정리");
+			}
+			if(num%2==0 && num!=-1) {
+				System.out.println(num+"은 짝수");
+			} else {
+				System.out.println(num+"은 홀수");
+			}
+			System.out.println("main end");
+		}
+	}
+	```
+	```java
+	public class ThrowsTest {
+		public void method1() throws Exception {
+			System.out.println("method1() called");
+			method2();
+		}
+		public void method2() throws Exception {
+			System.out.println("method2() called");
+			method3();
+		}
+		public void method3() throws Exception {
+			System.out.println("method3() called");
+			// 외부 또는 내부의 어떤 이유로 예외 발생된다고 가정.
+			int num = 100/0;
+			// throws는 예외를 처리하지 않는 한 결국에는 예외가 발생한다.(프로그램이 강제 종료된다.)
+			// throws는 JRE 외부에서 예외가 발생하는 경우에 쓴다.
+		}
+		public static void main(String[] args) throws Exception {
+			ThrowsTest test = new ThrowsTest();
+			test.method1();
+		}
+	}
+	```
+
+### 사용자 정의 예외처리 만들어보기(CustomException)
+```java
+public class AbnormalValueException extends Exception {
+	private double tall = 160.5;
+	public AbnormalValueException(String message) {
+		super(message);
+	}
+	public double getTall() {
+		return this.tall;
+	}
+}
+```
+```java
+public class MiddleTallAvg {
+	public void checkTall(double t) throws AbnormalValueException {
+		// 배열의 값의 유효범위는 140~180, 유효 범위에 해당하지 않으면 예외(AbnormalValueException) 발생.
+		if(t > 180) {
+			throw new AbnormalValueException("180보다 큰 값입니다.");
+		} else if(t < 140) {
+			throw new AbnormalValueException("140보다 작은 값입니다.");
+		}
+	}
+	public double averageTall(double[] talls) {
+		// 올해의 중학생 평균 키를 계산해서 리턴합니다.
+		double total = 0;
+		for(double t : talls) {
+			total += t;
+		}
+		return total/talls.length;
+	}
+	public static void main(String[] args) {
+		double[] middleStudents = new double[] {
+				170, 165, 121.5, 162.5, 148, 175, 195, 169, 159, 163, 166.5, 178
+		};
+		MiddleTallAvg mta = new MiddleTallAvg();
+		for(double ms : middleStudents) {
+			try {
+				mta.checkTall(ms);
+			} catch(AbnormalValueException ex) {
+				System.err.println(ex.getMessage());
+				ms = ex.getTall();
+			}
+		}
+		for(double t : middleStudents) {
+			System.out.print(t+" ");
+		} // 121.5 및 195는 사라져있다.
+		System.out.println();
+		System.out.println("올해의 중학생 평균 키 : "+mta.averageTall(middleStudents));
+	}
+}
+```
+
+## 래퍼 클래스
+ - Primitive Data Type은 단순 데이터를 담기만 할 뿐인 데이터 타입이다.
+ - 하여, 이를 객체로써 활용할 수 있도록 래퍼 클래스라는 것을 제공한다.
+ - 종류  
+	Primitive Data Type|래퍼 클래스
+	---|---
+	boolean|Boolean
+	byte|Byte
+	short|Short
+	char|Character
+	int|Integer
+	long|Long
+	float|Float
+	double|Double
+- Boxing 관련
+	- JDK 1.4버전까지는 Boxing , UnBoxing 지원안됨
+	```plaintext
+	Integer 객체 = 3 ; //오류
+	int num = Integer객체; //오류 
+	```
+	- JDK 1.5버전부터 Boxing , UnBoxing 지원됨
+	```plaintext
+	Integer 객체 = 3 ;  
+	int num = Integer객체;  
+	```
+	```java
+	public class Test3 {
+		public static void main(String[] args) {
+			Integer obj = 3; // Boxing
+			 // 내부적으로  Integer obj = Integer.valueof(3); 으로 자동 변환됨.
+			int num = obj; // UnBoxing
+			 // 내부적으로 int num = Integer.valueof(3); 으로 자동 변환됨.
+			
+			num = Integer.parseInt("1234");
+			 // String 데이터를 int 타입으로 parsing
+			System.out.println(Integer.toBinaryString(1234));
+			 // Decimal 타입에 대한 10진수 값 반환
+			System.out.println(Integer.toOctalString(1234));
+			 // Decimal 타입에 대한 8진수 값 반환
+			System.out.println(Integer.toHexString(1234));
+			 // Decimal 타입에 대한 16진수 값 반환
+		}
+	}
+	```
+
+
+## 제네릭(Generic)
+ - 결정되지 않은 타입을 파라미터로 처리하고 실제 사용할 때 파라미터를 구체적인 타입으로 대체시키는 기능
+ ```java
+ public class Box<T> {
+	public T content;
+	// T에는 어떠한 타입이든 올 수 있다.
+ }
+ ```
+
+
+## 컬렉션(Collection)
+ - 컬렉션 객체는 객체만 저장한다.
+ - 컬렉션 객체는 검색, 저장 등의 사항들을 효율 좋은 알고리즘을 통해 만들어졌다.
+ - 크기를 동적으로 가질 수 있다.
+ - 3개의 인터페이스가 있다.
+	- List
+		- 객체를 저장할 때, 순서가 유지가 된다.
+			- 나열된 순서의 중간 데이터가 삭제되면 그 뒤에 순서들이 앞으로 당겨져야한다.
+			- 순서 중간에 데이터가 추가 될 수 있어야 한다.
+			- 위 2가지 사항들로 인해 부하가 다소 있다.
+		- 중복 저장도 가능하다.
+		- 구현 클래스
+			- ArrayList
+				- 단일 스레드 환경에서 사용하도록 설계됨.
+					- 즉, 가볍고 빠르다.
+			- Vector
+				- 멀티 스레드 환경에서 동기화를 지원하도록 설계됨.
+					- 즉, 무겁고 느리다.
+			- LinkedList
+		```java
+		import java.util.Vector;
+
+		public class ListEx1 {
+			public static void main(String[] args) {
+				String[] cars = new String[] {
+						"Audi", "K3", "SM6", "Bentz", "K3", "BMW", "Genesis", "K3"
+				};
+				Vector<String> vec = new Vector<String>();
+				System.out.println(vec.size()); // 0
+				for(String s : cars) {
+					vec.add(s);
+				}
+				System.out.println(vec.size()); // 8
+				for(String s : vec) {
+					System.out.print(s+", ");
+				}
+				System.out.println();
+				
+				vec.add(1, "캐스퍼"); //Index 1번에 데이터 추가
+				vec.remove(5); // Index 5번 데이터 삭제
+				vec.set(7, "K8"); // Index 7번 데이터를 K8로 변경
+				 // set은 replace 개념이다.
+				for(String s : vec) {
+					System.out.print(s+", ");
+				}
+			}
+		}
+		```
+		```java
+		import java.util.Vector;
+
+		public class ListEx2 {
+			public static void main(String[] args) {
+				Vector<String> vec = new Vector<String>();
+				System.out.println("size: "+vec.size()); // 0
+				System.out.println("capacity: "+vec.capacity()); // 10
+				
+				for(int i=0; i<11; i++) {
+					vec.add(String.valueOf(i));
+				}
+				System.out.println("size: "+vec.size()); // 11
+				System.out.println("capacity: "+vec.capacity()); // 20
+				
+				for(int i=11; i<22; i++) {
+					vec.add(String.valueOf(i));
+				}
+				System.out.println("size: "+vec.size()); // 22
+				System.out.println("capacity: "+vec.capacity()); // 40
+				 // capacity를 초과하는 경우, 2배씩 새로운 메모리 공간을 확보한다.
+				 // 하여, 점차 데이터가 늘어날 수록 메모리 공간이 낭비되는 문제가 있다.
+				 // 하여, 미리 데이터가 들어갈 양을 계산해서 Vector 선언 시, capacity 크기를 지정해주는게 좋다.
+				    // Vector<String> vec = new Vector<String>(22);
+			}
+		}
+		```
+	- Set
+		- 객체를 저장할 때 동일한 객체가 저장되어 있는지 확인 후 저장한다.
+			- 즉, 중복 저장이 불가하다.
+		- 저장 순서를 보장하지 않는다.
+		- Index를 사용해서 저장 객체를 처리할 수 없다.
+			- 데이터를 꺼내기 위해서는 Iterator를 활용해야한다.
+				- Iterator는 데이터는 순환해서 꺼내주는 객체이다.
+		- 
+		- 구현 클래스
+			- HashSet
+				- 빠른 검색을 보장한다.
+			- TreeSet
+				- 정렬을 보장해준다.
+		```java
+		import java.util.HashSet;
+		import java.util.Iterator;
+		import java.util.TreeSet;
+
+		public class SetEx {
+
+			public static void main(String[] args) {
+				String[] cars = new String[] {
+						"Audi", "K3", "SM6", "Bentz", "K3", "BMW", "Genesis", "K3"
+				};
+				HashSet<String> hset = new HashSet();
+				TreeSet<String> tset = new TreeSet();
+				for(String s : cars) {
+					hset.add(s);
+					tset.add(s);
+				}
+				System.out.println("size: "+ hset.size()); // 6 (중복 데이터는 하나만 저장됨)
+				System.out.println("size: "+ tset.size()); // 6 (중복 데이터는 하나만 저장됨)
+				
+				Iterator<String> hsetIter = hset.iterator();
+				while(hsetIter.hasNext()) {
+					System.out.print(hsetIter.next() + ", ");
+					 // 데이터가 입력한 순서대로도 안되어 있고, 정렬도 안되어 있다.
+				}
+
+				System.out.println();
+				
+				Iterator<String> tsetIter = tset.iterator();
+				while(tsetIter.hasNext()) {
+					System.out.print(tsetIter.next() + ", ");
+					 // 데이터가 정렬되어 출력된다.(오름차순)
+				}
+			}
+		}
+		```
+	- Map
+		- 키와 값으로 구성된 엔트리를 저장한다.
+			- Map<key, value> 형태로 저장된다.
+		- 키는 중복 저장을 허용하지 않는다.
+			- null도 허용하지 않는다.
+		- 값은 중복 저장을 허용한다.
+			- null도 허용한다.
+		- 구현 클래스
+			- HashMap
+				- 멀티스레드를 지원하지 않는다.
+			- Hashtable
+				- 멀티스레드를 지원한다.
+			- TreeMap
+				- key 기준으로 정렬되어 저장된다.
+			- Properties
+				- key와 value 모두 String 타입으로 제한한다.
+					- <String, String>
+		```java
+		import java.util.Hashtable;
+		import java.util.Iterator;
+		import java.util.Set;
+
+		public class MapEx1 {
+			public static void main(String[] args) {
+				String[] cars = new String[] {
+						"Audi", "K3", "SM6", "K3", "Bentz", "BMW", "K3", "Genesis"
+				};
+				Hashtable<Integer, String> map1 = new Hashtable();
+				for(String s : cars) {
+					map1.put((int)(Math.random()*1000), s);
+					// key는 난수 생성해서 저장
+				}
+				System.out.println("size: " + map1.size()); // 8
+				
+				Set<Integer> keys = map1.keySet();
+				Iterator<Integer> iter = keys.iterator();
+				while(iter.hasNext()) {
+					Integer key = iter.next();
+					System.out.println(key + ": " + map1.get(key));
+				} // 데이터를 꺼내는 방법1(Iterator 활용)
+			}
+		}
+		```
+		```java
+		import java.util.TreeMap;
+		import java.util.Map.Entry;
+		import java.util.Set;
+
+		public class MapEx2 {
+			public static void main(String[] args) {
+				String[] cars = new String[] {
+						"Audi", "K3", "SM6", "K3", "Bentz", "BMW", "K3", "Genesis"
+				};
+				TreeMap<Integer, String> map1 = new TreeMap();
+				for(String s : cars) {
+					map1.put((int)(Math.random()*1000), s);
+				}
+				System.out.println("size: " + map1.size()); // 8
+				
+				Set<Entry<Integer, String>> entry = map1.entrySet();
+				for(Entry<Integer, String> item : entry) {
+					System.out.println(item.getKey() + " : " + item.getValue());
+					 // key가 정렬되어 데이터가 출력된다.(오름차순)
+				} // 데이터를 꺼내는 방법2(Entry 활용)
+			}
+		}
+		```
+ - Stack 클래스는 LIFO 자료구조를 구현화한 클래스이다.
+	```java
+	import java.util.Stack;
+
+	public class StackEx {
+		public static void main(String[] args) {
+			String[] cars = new String[] {
+					"Audi", "K3", "SM6", "Bentz", "BMW", "Genesis"
+			};
+			Stack<String> stack = new Stack<String>();
+			for(String s : cars) {
+				stack.push(s);
+			}
+			System.out.println(stack.size()); // 6
+			System.out.println(stack.peek()); // Genesis
+				// 마지막에 저장된 객체 또는 제일 먼저 꺼내질 객체를 확인
+				// stack은 입력된 순서대로 출력된다는 특징이 있다.
+			System.out.println(stack.pop()); // Genesis
+				// pop() 은 데이터를 꺼내는 메서드이다.
+			System.out.println(stack.size()); // 5
+		}
+	}
+	```
+
+### 장바구니 만들기
+```java
+public class Product {
+	private String name;
+	private int price;
+
+	public Product(String name, int price) {
+		super();
+		this.name = name;
+		this.price = price;
+	}
+	public String getName() {
+		return name;
+	}
+	public int getPrice() {
+		return price;
+	}
+}
+```
+```java
+public interface IShoppingBiz {
+   public void printAllProducts();
+   public void printPricePerProduct();
+   public int calculateTotalPrice();
+}
+```
+```java
+import java.util.Scanner;
+
+public class CommonUtil {
+   public String getUserInput() {
+	   Scanner input = new Scanner(System.in);	   
+	   return input.next();
+   }
+}
+```
+```java
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Map.Entry;
+
+import com.workshop.entity.Product;
+
+public class ShoppingBiz implements IShoppingBiz{
+	private HashMap<Product, Integer> basket;
+	public ShoppingBiz() {
+		super();
+		basket = new HashMap(); 
+	}
+	@Override
+	public void printAllProducts() {
+		Set<Product> keys = basket.keySet();
+		Iterator<Product> iter = keys.iterator();
+		for(int i=0;i<basket.size();i++) {
+			System.out.print((i+1)+"\t");
+			Product key = iter.next();
+			System.out.print(key.getName()+"\t"+ key.getPrice()+"\t");
+			System.out.println( basket.get(key)+"개");
+		}
+		
+	}
+	@Override
+	public void printPricePerProduct() {
+		Set<Product> keys = basket.keySet();
+		Iterator<Product> iter = keys.iterator();
+		for(int i=0;i<basket.size();i++) {
+			System.out.print((i+1)+"\t");
+			Product key = iter.next();
+			System.out.println(key.getName()+":"
+			+ calculateTotalPriceByProduct(key, basket.get(key))+"원");			 
+		}		
+	}
+	@Override
+	public int calculateTotalPrice() {
+		int total = 0;
+		Set<Entry<Product, Integer>> entry = basket.entrySet();
+		for(Entry<Product, Integer> item : entry) {
+			total+=item.getValue();
+		}
+		return total;		
+	}
+	private int calculateTotalPriceByProduct(Product product, int count) {
+		return product.getPrice()*count;
+	}
+}
+```
+```java
+
+```
+
+
+## JDBC 프로그래밍
+ - JDBC 프로그래밍 단계
+	1. JDBC API 인터페이스의 구현 클래스들(driver, jar) 준비
+		- (방법1)os에 CLASSPATH 환경변수에 추가
+		- (방법2)eclipse에서는 프로젝트의 build path의 library 추가
+			- oracle 설치 폴더 내에 jdbc library가 있음.
+	2. java.sql.*; 에서 필요한 클래스들 import 진행.
+	3. driver 클래스들로부터 Root 클래스 로딩
+		- ex) oracle.jdbc.OracleDriver / com.mysql.cj.jdbc.Driver 등등
+		- new를 사용해서 객체 생성
+			- 컴파일 시점에 로딩됨.
+		- Class.forName("oracle.jdbc.OracleDriver")
+			- 실행시점에 로딩됨.
+	4. DB Connection
+		- Connection con = DriverManager.getConnection(dburl, user, password);
+			- 보안관련된 정보가 있어 일반적으로 소스코드에 사용하지 않음.
+				- 별도 설정이나 IDE의 Property에 넣음.
+	```java
+	/* 소스코드상에 DB 연결정보가 있는건 보안 문제가 되기 때문에 미사용 
+	 * 소스코드를 통한 DB 연결 방법만 참고 */
+	import java.sql.Connection;
+	import java.sql.DriverManager;
+	import java.sql.SQLException;
+
+	public class JDBCEx {
+		public static void main(String[] args) {
+			// jdbc Driver 로딩
+			try {
+				Class.forName("oracle.jdbc.OracleDriver");
+			} catch(ClassNotFoundException ex) {
+				System.err.println("driver class 로딩 못함");
+			}
+			
+			// DB Connection
+			String dburl = "jdbc:oracle:thin:@localhost:1521/xe";
+			String user = "hr";
+			String password = "oracle";
+			try {
+				Connection con = DriverManager.getConnection(dburl, user, password);
+				System.out.println("DB Connect Success");
+			} catch(SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+	```
+	- 소스코드가 아닌 별도의 Properties 파일을 통한 DB Connection 연결 방법
+	```plaintext
+	driver=oracle.jdbc.OracleDriver
+	url=jdbc:oracle:thin:@localhost:1521/xe
+	user=hr
+	passwd=oracle
+	```
+	```java
+	import java.sql.Connection;
+	import java.sql.DriverManager;
+	import java.sql.SQLException;
+	import java.util.Properties;
+	import java.io.FileInputStream;
+	import java.io.IOException;
+
+	public class JDBCEx {
+		public static void main(String[] args) {
+			Properties info = new Properties();
+			try {
+				info.load(new FileInputStream("C:\\Users\\User\\java-test\\Day5\\dbinfo.properties"));
+				 // DB 연결정보가 있는 파일 로딩
+				Class.forName(info.getProperty("driver"));
+				 // jdbc Driver 로딩
+			} catch(ClassNotFoundException ex) {
+				System.err.println("driver class 로딩 못함");
+			} catch(IOException ex) {
+				System.err.println("Properties 로딩 못함.");
+			}
+		
+			try {
+				Connection con = DriverManager.getConnection(
+						info.getProperty("url")
+						, info.getProperty("user")
+						, info.getProperty("passwd"));
+				 // DB Connection
+				System.out.println("DB Connect Success");
+			} catch(SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+	```
 
 ## 기타 - main 메서드에 인수 주기
 ```java
@@ -2950,3 +3684,75 @@ public class ArrayEx5 {
 		}
 	}
 	```
+
+
+## 기타 - Object 및 System 객체의 메서드들
+```java
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+
+public class Test1 {
+	public static void main(String[] args) {
+		Object o = new Object();
+		System.out.println(o.getClass()); // class java.lang.Object
+		Object o2 = new Object();
+		System.out.println(o==o2); // false
+		System.out.println(o.hashCode()); // 925858445
+		System.out.println(o2.hashCode()); // 798154996
+		 // Object.hashCode() 는 객체의 주소값을 확인하는 메서드이다.
+		
+		o = new String("Java");
+		System.out.println(o.getClass()); // class java.lang.String
+		 //  Object.getClass() 는 객체의 타입을 확인하는 메서드이다. 
+		
+		long start = System.currentTimeMillis();
+		for(int i=0; i<100; i++) {
+			System.out.println(i);
+		}
+		long end = System.currentTimeMillis();
+		 // System.currentTimeMillis() 메서드는 시스템의 현재 시간을 확인하는 메서드이다.
+		System.out.println((end-start)/1000+"초"); // 프로그램 동작 시간 측정
+		// System.exit(0); // WAS(ex. Tomcat)에서 실행되는 Java Object(Servlet)에서는 호출하면 JVM이 종료된다.
+		
+		Properties props = System.getProperties(); // Properties는 <String, String> 타입으로 키와 값을 저장하는 객체
+		 // System.getProperties()는 시스템에 있는 Java 관련 정보 호출
+		Set<Object> keys = props.keySet(); // key 집합만 Set으로 반환
+		Iterator<Object> iter = keys.iterator(); // Iterator는 순차적으로 요소를 Heap 메모리에서 Search 후, 반환하는 객체
+		while(iter.hasNext()) {
+			String key = (String)iter.next();
+			System.out.println(key + ":" + props.getProperty(key));
+		}
+	}
+}
+```
+
+## 기타 - 날짜/시간 관련 클래스들
+```java
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class Test4 {
+	public static void main(String[] args) {
+		Date d = new Date();
+		System.out.println(d); // Thu Mar 13 13:53:51 KST 2025
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("YYYY.MM.DD HH:mm.ss");
+		String strDate = sdf.format(d);
+		System.out.println(strDate); // 2025.03.72 13:53.51
+		
+		Calendar today = Calendar.getInstance();
+		System.out.println(today);
+		 // java.util.GregorianCalendar[time=1741841631776,areFieldsSet=true,areAllFieldsSet=true,lenient=true,zone=sun.util.calendar.ZoneInfo[id="Asia/Seoul",offset=32400000,dstSavings=0,useDaylight=false,transitions=30,lastRule=null],firstDayOfWeek=1,minimalDaysInFirstWeek=1,ERA=1,YEAR=2025,MONTH=2,WEEK_OF_YEAR=11,WEEK_OF_MONTH=3,DAY_OF_MONTH=13,DAY_OF_YEAR=72,DAY_OF_WEEK=5,DAY_OF_WEEK_IN_MONTH=2,AM_PM=1,HOUR=1,HOUR_OF_DAY=13,MINUTE=53,SECOND=51,MILLISECOND=776,ZONE_OFFSET=32400000,DST_OFFSET=0]
+		System.out.println(today.get(Calendar.MONTH)+1); // 3 (=3월)
+		/* Date, Calendar는 날짜, 시간을 확인할 수 있지만 조작할 수는 없다.
+		 * 조작하기 위해서는 LocalDateTime 객체를 활용해야 한다. */
+		
+		LocalDateTime now = LocalDateTime.now();
+		System.out.println(now); // 2025-03-13T14:02:25.052508600
+		LocalDateTime future = now.plusMonths(4);
+		System.out.println(future); // 2025-07-13T14:02:25.052508600
+	}
+}
+```
