@@ -67,6 +67,10 @@
  30. [컬렉션(Collection)](#컬렉션collection)  
 	30-1. [장바구니 만들기](#장바구니-만들기)
  31. [JDBC 프로그래밍](#jdbc-프로그래밍)
+ 32. [스레드(Thread)](#스레드thread)
+ 33. [람다식](#람다식)
+ 34. [데이터 입출력(I/O)](#데이터-입출력io)
+ 35. [네트워크](#네트워크)
  - [기타 - main 메서드에 인수 주기](#기타---main-메서드에-인수-주기)
  - [기타 - Java의 메서드 호출 방식](#기타---java의-메서드-호출-방식)
  - [기타 - Object 및 System 객체의 메서드들](#기타---object-및-system-객체의-메서드들)
@@ -3465,7 +3469,7 @@ public interface IShoppingBiz {
 import java.util.Scanner;
 
 public class CommonUtil {
-   public String getUserInput() {
+   public static String getUserInput() {
 	   Scanner input = new Scanner(System.in);	   
 	   return input.next();
    }
@@ -3477,53 +3481,95 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import com.workshop.entity.Product;
-
 public class ShoppingBiz implements IShoppingBiz{
 	private HashMap<Product, Integer> basket;
+	
 	public ShoppingBiz() {
 		super();
 		basket = new HashMap(); 
+		basket.put(new Product("사과", 1500), Integer.valueOf(6));
+		basket.put(new Product("라면", 1200), Integer.valueOf(3));
+		basket.put(new Product("식용유", 3500), Integer.valueOf(1));
+		basket.put(new Product("과자", 2400), Integer.valueOf(5));		
 	}
+
 	@Override
 	public void printAllProducts() {
+		System.out.println("------------------------------------");
+		System.out.println("순번  품목명        단가    구입개수");
+		System.out.println("------------------------------------");
 		Set<Product> keys = basket.keySet();
 		Iterator<Product> iter = keys.iterator();
 		for(int i=0;i<basket.size();i++) {
-			System.out.print((i+1)+"\t");
+			System.out.print((i+1)+"   ");
 			Product key = iter.next();
-			System.out.print(key.getName()+"\t"+ key.getPrice()+"\t");
+			System.out.print(key.getName()+"  \t"+ key.getPrice()+"\t");
 			System.out.println( basket.get(key)+"개");
-		}
-		
+		}		
+		System.out.println("------------------------------------");
 	}
+
 	@Override
 	public void printPricePerProduct() {
 		Set<Product> keys = basket.keySet();
 		Iterator<Product> iter = keys.iterator();
+		System.out.println("----------------- ");
 		for(int i=0;i<basket.size();i++) {
-			System.out.print((i+1)+"\t");
+			System.out.print((i+1)+".");
 			Product key = iter.next();
-			System.out.println(key.getName()+":"
+			System.out.println(key.getName()+" : "
 			+ calculateTotalPriceByProduct(key, basket.get(key))+"원");			 
 		}		
+		System.out.println("------------------ ");
 	}
+
 	@Override
 	public int calculateTotalPrice() {
 		int total = 0;
 		Set<Entry<Product, Integer>> entry = basket.entrySet();
 		for(Entry<Product, Integer> item : entry) {
-			total+=item.getValue();
+			total+=calculateTotalPriceByProduct(item.getKey(), item.getValue()) ;
 		}
 		return total;		
 	}
+	
 	private int calculateTotalPriceByProduct(Product product, int count) {
 		return product.getPrice()*count;
 	}
 }
 ```
 ```java
-
+public class ShoppingTest {
+	public static void main(String[] args) {
+		IShoppingBiz biz = new ShoppingBiz();
+		System.out.println("안녕하세요~ 장바구니에 상품을 담아봅니다.");
+		while(true) {
+			printMenu();
+			System.out.print("## 메뉴 입력:");
+			String  menu = CommonUtil.getUserInput();
+			switch(menu) {
+			case "1" : biz.printAllProducts(); break;
+			case "2" : biz.printPricePerProduct(); break;
+			case "3" : 
+				System.out.println("총 구입 가격 : "+biz.calculateTotalPrice()+"원");break;
+			case "9" : System.out.println("프로그램을 종료합니다. Bye~ Bye~");
+			           System.exit(0);
+			default :
+				System.out.println("[에러] 메뉴를 잘못 입력하였습니다.");
+			}
+		}
+		
+		
+	}
+	public static void printMenu() {
+		System.out.println("==== << 메뉴 >> =====");
+		System.out.println("1.장바구니 목록 출력");
+		System.out.println("2.품목별 가격 출력");
+		System.out.println("3.총 구입 가격 출력");
+		System.out.println("9.종료");
+		System.out.println("====================");
+	}
+}
 ```
 
 
@@ -3532,89 +3578,1193 @@ public class ShoppingBiz implements IShoppingBiz{
 	1. JDBC API 인터페이스의 구현 클래스들(driver, jar) 준비
 		- (방법1)os에 CLASSPATH 환경변수에 추가
 		- (방법2)eclipse에서는 프로젝트의 build path의 library 추가
-			- oracle 설치 폴더 내에 jdbc library가 있음.
+			- oracle은 설치 폴더 내에 jdbc library가 있음.
+			- driver는 결국에는 jdbc api를 구현한 클래스이다.
 	2. java.sql.*; 에서 필요한 클래스들 import 진행.
 	3. driver 클래스들로부터 Root 클래스 로딩
 		- ex) oracle.jdbc.OracleDriver / com.mysql.cj.jdbc.Driver 등등
 		- new를 사용해서 객체 생성
 			- 컴파일 시점에 로딩됨.
-		- Class.forName("oracle.jdbc.OracleDriver")
+		- Class.forName("driver 클래스명")
+			- driver 클래스명 : oracle.jdbc.OracleDriver
 			- 실행시점에 로딩됨.
+			- driver를 찾지 못할 수도 있기 때문에 ClassNotFoundException 예외 처리가 필요하다.
 	4. DB Connection
 		- Connection con = DriverManager.getConnection(dburl, user, password);
 			- 보안관련된 정보가 있어 일반적으로 소스코드에 사용하지 않음.
 				- 별도 설정이나 IDE의 Property에 넣음.
-	```java
-	/* 소스코드상에 DB 연결정보가 있는건 보안 문제가 되기 때문에 미사용 
-	 * 소스코드를 통한 DB 연결 방법만 참고 */
-	import java.sql.Connection;
-	import java.sql.DriverManager;
-	import java.sql.SQLException;
+			- Connection는 DataBase에 대한 연결 및 상태 정보를 가지는 객체임.
+	5. Connection 객체로부터 SQL 대행 객체 Statement 구현 객체를 생성.
+		- Statement 구현 객체는 정적 SQL을 전송 및 결과를 받아온다.
+			- 정적 SQL은 완전한 SQL을 문자열로 전송한다.
+			- 정적 SQL이다 보니 where 절이 바뀌는 경우에도 DB에는 Hardparsing이 발생한다.
+				- 하여, where절이 자주 바뀌는 정적 SQL은 DB의 성능에 문제를 발생시킬 수 있다.
+				```java
+				Statement stat = con.createStatement();
+				 // Statement 객체 생성
+				```
+		- PreparedStatement 구현 객체는 동적 SQL을 전송 및 결과를 받아온다.
+			- 동적 SQL은 SQL문장의 일부가 실행시점에 결정된다.
+			- **select * from 테이블 where = ?** 과 같이 SQL 구문이 만들어진다.
+				- 즉, where절이 동적으로 처리될 수 있게 되기 때문에 DB 성능 문제가 개선이 된다.
+				```java
+				PreparedStatement stat = con.prepareStatement(sql);
+				 // PreparedStatement 객체 생성
+				 // pre이기 때문에 객체 생성시에 sql을 전달한다.
+				```
+		- CallableStatement 구현 객체는 DB 내에 프로시저를 호출한다.
+			- Statement / PreparedStatement 의 하위 객체이다.
+	6. sql문 작성 및 실행
+		- Statement 객체 하위의 메서드를 통해 진행
+		```plaintext
+		stat.execute() : boolean(검색sql문 여부), DML, DDL, DCL 실행
+		 // 어떤 유형의 SQL이 수행될지 결정 안됬을 때 유용하다. (동적 SQL)
+		
+		ResultSet rs = stat.executeQuery() : select문
+		 // ResultSet은 DB 쿼리 결과를 2차원 배열의 구조로 받아올 수 있는 객체이다.
+		 // 데이터를 확인하기 위해서는 별도의 처리를 해줘야 한다.
+		
+		int rows = stat.executeUpdate() : insert, update, delete, ddl, dcl 실행
+		 // DML 실행한 횟수를 반환한다.
+		
+		stat.executeBatch() : 하나 이상의 sql문을 실행
+		```
+	7. SQLException 예외처리
+		- DB 데이터 CRUD 처리에 대해서도 예외처리가 필요하다.
+			- 아래는 DB Connection 시, 같이 처리하긴 했다.
+	8. Resource 정리
+		- DB 연결정보에 대해서 연결을 끊어주어 Resource 관리를 한다.
+		```java
+		/* 소스코드상에 DB 연결정보가 있는건 보안 문제가 되기 때문에 미사용.
+		* 소스코드를 통한 DB 연결 방법만 참고 */
+		import java.sql.Connection;
+		import java.sql.DriverManager;
+		import java.sql.SQLException;
 
-	public class JDBCEx {
-		public static void main(String[] args) {
-			// jdbc Driver 로딩
-			try {
-				Class.forName("oracle.jdbc.OracleDriver");
-			} catch(ClassNotFoundException ex) {
-				System.err.println("driver class 로딩 못함");
+		public class JDBCEx {
+			public static void main(String[] args) {
+				 // jdbc Driver 로딩
+				try {
+					Class.forName("oracle.jdbc.OracleDriver");
+				} catch(ClassNotFoundException ex) {
+					System.err.println("driver class 로딩 못함");
+				}
+				
+				 // DB Connection
+				String dburl = "jdbc:oracle:thin:@localhost:1521/xe";
+				String user = "hr";
+				String password = "oracle";
+				try {
+					Connection con = DriverManager.getConnection(dburl, user, password);
+					System.out.println("DB Connect Success");
+				} catch(SQLException ex) {
+					ex.printStackTrace();
+				}
 			}
-			
-			// DB Connection
-			String dburl = "jdbc:oracle:thin:@localhost:1521/xe";
-			String user = "hr";
-			String password = "oracle";
-			try {
-				Connection con = DriverManager.getConnection(dburl, user, password);
-				System.out.println("DB Connect Success");
-			} catch(SQLException ex) {
-				ex.printStackTrace();
+		}
+		```
+	- 소스코드가 아닌 별도의 Properties 파일을 통한 DB Connection 연결 방법
+		- 추가로 Statement 객체를 통한 DB 조회 진행.
+		- 추가로 메타데이터도 출력 해보기
+			- 메타데이터: DB의 컬럼 정보들
+		```plaintext
+		driver=oracle.jdbc.OracleDriver
+		url=jdbc:oracle:thin:@localhost:1521/xe
+		user=hr
+		passwd=oracle
+		```
+		```java
+		import java.sql.Connection;
+		import java.sql.DriverManager;
+		import java.sql.ResultSet;
+		import java.sql.ResultSetMetaData;
+		import java.sql.SQLException;
+		import java.sql.Statement;
+		import java.util.Properties;
+		import java.io.FileInputStream;
+		import java.io.IOException;
+
+		public class JDBCEx {
+			public static void main(String[] args) {
+				Properties info = new Properties();
+				try {
+					info.load(new FileInputStream("C:\\Users\\User\\java-test\\Day5\\dbinfo.properties"));
+					 // DB 연결정보가 있는 파일 로딩
+					Class.forName(info.getProperty("driver"));
+					 // jdbc Driver 로딩
+				} catch(ClassNotFoundException ex) {
+					System.err.println("driver class 로딩 못함");
+					 // driver를 찾지 못할 수도 있기 때문에 예외 처리 필요.
+				} catch(IOException ex) {
+					System.err.println("Properties 로딩 못함.");
+					 // .properties 파일은 I/O 처리에 대한 것으로 그에 따른 예외 처리 필요.
+				}
+				String sql = "select * from departments "; // sql문 작성
+				Statement stat = null; // Statement 객체 생성
+				ResultSet rs = null; // select 쿼리 결과를 받아올 객체 생성
+				Connection con = null; // DB Connection 객체 생성
+				ResultSetMetaData rsmd = null; // 메타데이터를 가져오기 위한 객체 생성
+				try {
+					con = DriverManager.getConnection(
+							info.getProperty("url")
+							, info.getProperty("user")
+							, info.getProperty("passwd"));
+					 // DB Connection
+					System.out.println("DB Connect Success");
+					
+					stat = con.createStatement();
+					rs = stat.executeQuery(sql); // 구성된 sql문 실행 및 결과 반환.
+					rsmd = rs.getMetaData(); // 메타데이터를 DB로부터 가져오기
+
+					while(rs.next()) {
+						 // ResultSet의 데이터를 출력할 수 있도록 처리
+						System.out.print(rs.getInt(1)+"\t"); // rs.getIt("department_id")
+						System.out.print(rs.getString(2)+"\t"); // rs.getIt("department_name")
+						System.out.print(rs.getInt(3)+"\t"); // rs.getIt("manager_id")
+						System.out.println(rs.getInt("location_id")+"\t"); // 컬럼 순번이 아니라 컬럼명으로 해도 된다.
+					}
+					/* 출력 결과 일부
+					 * 10	Administration	200	1700	
+					 * 20	Marketing	201	1800	
+					 * 30	Purchasing	114	1700
+					 * ... */
+
+					System.out.println(); System.out.println();
+					for(int i=0; i<rsmd.getColumnCount();i++) {
+						// 받아온 메타데이터를 출력
+						System.out.print(rsmd.getColumnName(i+1)+"\t");
+						if(rsmd.isNullable(i+1) == 0) {
+							System.out.print("NOT NULL"+"\t");
+						}
+						System.out.print(rsmd.getColumnTypeName(i+1)+"\t");
+						System.out.print("("+rsmd.getPrecision(i+1));
+						if(rsmd.getScale(i+1) > 0) {
+							System.out.println(rsmd.getScale(i+1)+")");
+						} else {
+							System.out.println(")");
+						}
+					}
+					/* 출력 결과
+					 * DEPARTMENT_ID	NOT NULL	NUMBER	(4)
+					 * DEPARTMENT_NAME	NOT NULL	VARCHAR2	(30)
+					 * MANAGER_ID	NUMBER	(6)
+					 * LOCATION_ID	NUMBER	(4) */
+
+				} catch(SQLException ex) {
+					ex.printStackTrace();
+					 // DB 연결을 못할 수도 있기에 예외 처리 필요.
+				} finally {
+					 // DB 연결에 대한 Resource 정리 진행. (=연결끊기)
+					try {
+						if(rs!=null) rs.close();
+						if(stat!=null) stat.close();
+						if(con!=null) con.close();
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		```
+	- PreparedStatement 객체를 통한 DB CRUD 방법.
+		```java
+		import java.sql.Connection;
+		import java.sql.DriverManager;
+		import java.sql.PreparedStatement;
+		import java.sql.ResultSet;
+		import java.sql.SQLException;
+		import java.util.Properties;
+		import java.io.FileInputStream;
+		import java.io.IOException;
+
+		public class JDBCEx2 {
+			public static void main(String[] args) {
+				Properties info = new Properties();
+				try {
+					info.load(new FileInputStream("C:\\Users\\User\\java-test\\Day5\\dbinfo.properties"));
+					Class.forName(info.getProperty("driver"));
+				} catch(ClassNotFoundException ex) {
+					System.err.println("driver class 로딩 못함");
+				} catch(IOException ex) {
+					System.err.println("Properties 로딩 못함.");
+				}
+				String sql = "insert into departments (department_id, department_name) values (?,?) ";
+				 // sql문 작성 및 DB에 전달.
+				PreparedStatement stat = null; // PreparedStatement 객체 생성
+				ResultSet rs = null; // select 쿼리 결과를 받아올 객체 생성
+				Connection con = null; // DB Connection 객체 생성
+				try {
+					con = DriverManager.getConnection(
+							info.getProperty("url")
+							, info.getProperty("user")
+							, info.getProperty("passwd"));
+					System.out.println("DB Connect Success");
+					
+					stat = con.prepareStatement(sql);
+					 // PreparedStatement는 객체 생성 시에 sql문을 DB에 전달.
+					stat.setInt(1, 290); // insert 구문 values 각 항목 입력
+					stat.setString(2, "AI로봇개발"); // insert 구문 values 각 항목 입력
+					
+					int rows = stat.executeUpdate();
+					if(rows>0) {
+						System.out.println("insert 성공");
+					}
+				} catch(SQLException ex) {
+					ex.printStackTrace();
+				} finally {
+					try {
+						if(rs!=null) rs.close();
+						if(stat!=null) stat.close();
+						if(con!=null) con.close();
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		```
+ - JDBC 기타
+	- Java에서 DB 데이터를 처리하면 기본적으로 AutoCommit이 된다.
+		- 트랜잭션 관리를 위해서 AutoCommit을 false로 변경하여, 수동으로 처리해주는 방법도 있다.
+
+
+## 스레드(Thread)
+ - Thread 상속 혹은 Runnable 인터페이스를 받고 start 메서드를 통해 스레드 동작을 시키고 그 내용을 확인
+	```java
+	package lab.java.baisc;
+
+	class MyThread1 extends Thread {
+		@Override
+		public void run() {
+			for(int i=0; i<300; i++) {
+				System.out.println(getName()+" "+i);
+			}
+		}
+	}
+	class MyThread2 implements Runnable {
+		String name;
+		public MyThread2(String name) {
+			this.name = name;
+		}
+		@Override
+		public void run() {
+			for(int i=0; i<300; i++) {
+				System.out.println(name+" "+i);
+			}
+		}
+	}
+	public class ThreadEx1 {
+		public static void main(String[] args) {
+			MyThread1 t1 = new MyThread1();
+			MyThread2 t2 = new MyThread2("MyThread2");
+			new Thread(t2).start();
+			t1.start(); // start는 스레드 호출 및 스케쥴러에서 대기하다가 신호를 받으면 실행
+			for(int i=0; i<300; i++) {
+				System.out.println(Thread.currentThread().getName()+" "+i);
+				 // Thread.currentThread() 현재 동작중인 스레드의 정보를 가져옴.
+			} // 실행 결과를 보면 스레드가 순서대로 나오지 않는다.
+		}     // 즉, 이는 멀티스레드로 동작중이다라는 것을 알 수 있다.
+	}
+
+	```
+ - Panel 객체를 통해 그림을 그리게 하면서 멀티스레드 동작이 되는지 확인.
+	- 아래 ThreadEx2와 같이 확인.
+	```java
+	package lab.java.baisc;
+
+	import java.awt.Font;
+	import java.awt.Graphics;
+	import java.awt.Panel;
+
+	public class CountThread extends Panel implements Runnable{
+		int count = 0;
+		public CountThread () {
+			setSize(300, 300);
+		}
+		public void paint(Graphics g) {
+			g.setFont(new Font("ArialBlack", Font.BOLD, 100));
+			g.drawString(String.valueOf(count), 100, 150);
+		}
+		@Override
+		public void run() {
+			while(true) {
+				try {
+				Thread.sleep(1000);
+				count++;
+				repaint();//배경색으로 Panel을 Clear 한 후에 paint() 호출
+				}catch(InterruptedException e) {
+					
+				}
+			}		
+		}
+	}
+	```
+ - 까만 배경에 눈내리듯이 그림을 그리게 하면서 멀티스레드 동작이 되는지 확인.
+	- 아래 ThreadEx2와 같이 확인.
+	```java
+	package lab.java.baisc;
+
+	import java.awt.Color;
+	import java.awt.Graphics;
+	import java.awt.Panel;
+
+	public class SnowThread extends Panel implements Runnable {
+		int x, y;
+
+		public SnowThread() {
+			setBackground(Color.black);
+			setSize(300, 300);
+			x = (int) (Math.random() * this.getWidth() + 1);
+			y = (int) (Math.random() * this.getHeight() + 1);
+		}
+		
+		public void update(Graphics g) {
+			paint(g);
+		}
+
+		public void paint(Graphics g) {
+			g.setColor(Color.white);
+			g.fillOval(x, y, 5, 5);
+		}
+
+		@Override
+		public void run() {
+			while(true) {
+				try {
+				Thread.sleep(200);
+				x = (int) (Math.random() * this.getWidth() + 1);
+				y = (int) (Math.random() * this.getHeight() + 1);
+				repaint();//update()-> paint() 호출
+				}catch(InterruptedException e) {
+					
+				}
 			}
 		}
 	}
 	```
-	- 소스코드가 아닌 별도의 Properties 파일을 통한 DB Connection 연결 방법
-	```plaintext
-	driver=oracle.jdbc.OracleDriver
-	url=jdbc:oracle:thin:@localhost:1521/xe
-	user=hr
-	passwd=oracle
+ - CountThread와 SnowThread를 GUI에 동시에 실행시켜 멀티 스레드 동작에 대한 확인.
+	```java
+	package lab.java.baisc;
+
+	import java.awt.Frame;
+
+	public class ThreadEx2 extends Frame{
+		CountThread count ;
+		SnowThread snow;
+		public ThreadEx2() {
+			setSize(600,300);
+			count = new CountThread();
+			this.add(count);
+			snow = new SnowThread();
+			add(snow);
+			new Thread(count).start();
+			new Thread(snow).start();		
+			setVisible(true);		
+		}
+		public static void main(String[] args) {
+			new ThreadEx2();
+		}
+	} // 종료는 이벤트 구현이 안되어 있어, console에서 강제 종료할 것.
+	```
+ - Thread 일시 정지 및 재가동 테스트
+	```java
+	public class ThreadEx3 extends Thread {
+		public void first() {
+			System.out.println("first");
+			second();
+		}
+		public void second() {
+			System.out.println("second");
+		}
+		@Override
+		public void run() {
+			System.out.println("run");
+			first();
+		}
+		public static void main(String[] args) {
+			System.out.println(Thread.currentThread().getName()+" started...running");
+			ThreadEx3 t = new ThreadEx3();
+			t.start();
+			try {
+				t.join(); // 주석 해보면서 test해보기
+				 // main 스레드에 대해 일시정지하게 된다.
+			} catch(InterruptedException ex) {
+				ex.printStackTrace();
+			}
+			System.out.println(Thread.currentThread().getName()+" end");
+		}
+	}
+	```
+ - Thread 우선순위 조정해보기
+	```java
+	public class ThreadEx4 extends Thread {
+		@Override
+		public void run() {
+			System.out.println(getName());
+			System.out.println(getPriority());
+		}
+		public static void main(String[] args) {
+			System.out.println(Thread.currentThread().getName()+" started...running");
+			ThreadEx4 t = new ThreadEx4();
+			t.setName("첫번쨰 스레드");
+			t.setPriority(Thread.MIN_PRIORITY); // 주석해서 봐보기
+			 // 우선순위를 최소로 조정.
+			
+			ThreadEx4 t2 = new ThreadEx4();
+			t2.setName("두번쨰 스레드");
+			
+			t.start();
+			t2.start();
+			 // 우선순위가 같아 실행할때마다 순서가 매번 달라진다.
+			System.out.println(Thread.currentThread().getName()+" end");
+		}
+	}
+	```
+ - ATM에서 2명이 동시에 1000원씩 인출하는 프로그램 구성
+	- 동시에 출금을 하다보니 금액이 따로 처리되는게 아니라 한번에 처리된다.
+		- 1000씩 인출하면 member1,2 각각 1000씩 줄어야하나 2000씩 줄어든다.
+	- 이는 동기화 문제에 대한 내용이다.
+	```java
+	class ATM  implements Runnable{
+		private long depositeMoney = 10000;
+		public void withDraw(long howMuch) { 
+			if (getDepositeMoney() > 0) { 
+				depositeMoney -= howMuch;
+				System.out.print(Thread.currentThread().getName()+ " , "); 
+				System.out.printf("잔액 : %,d 원 %n", getDepositeMoney());
+			}else {
+				System.out.print(Thread.currentThread().getName()+ " , ");
+				System.out.println("잔액이 부족합니다.");
+			}
+		}
+		public long getDepositeMoney() {
+			return depositeMoney;
+		}
+		public void run() { 
+			for (int i = 0; i < 10; i++) {
+				try {
+					Thread.sleep(1000);
+				}catch (InterruptedException e) { 
+					e.printStackTrace();
+				}
+				if (getDepositeMoney() <= 0)   break; 
+				withDraw(1000); 				
+			}
+		}
+	}
+	public class ThreadEx5 {
+		public static void main(String[] args) {
+			ATM atm = new ATM();
+			Thread t1 = new Thread(atm, "member1");
+			Thread t2 = new Thread(atm, "member2");
+			t1.start();
+			t2.start();
+		}
+	}
+	```
+ - 위 ATM 예제의 문제점을 해결
+	- 동시에 두 스레드가 인출하면서 동기화 문제가 발생한 것이다.
+	- 하여, 임계영역에서 인출하는 방식으로 해결하려함.
+		- 임계영역 : 멀티스레드에 의해 공유자원이 참조될 수 있는 코드의 범위
+		- Access는 동시에 되도, 인출은 한개의 스레드만 허용하도록 구성.
+	- 근데 스레드 하나가 for문을 전부사용해서 다른 스레드가 실행되지 못하는 현상이 발생한다.
+		- 스레드의 하나가 독점을 하는 상황이 발생된다.
+	```java
+	class ATM  implements Runnable{
+		private long depositeMoney = 10000;
+		public void withDraw(long howMuch) { 
+			if (getDepositeMoney() > 0) { 
+				depositeMoney -= howMuch;
+				System.out.print(Thread.currentThread().getName()+ " , "); 
+				System.out.printf("잔액 : %,d 원 %n", getDepositeMoney());
+			}else {
+				System.out.print(Thread.currentThread().getName()+ " , ");
+				System.out.println("잔액이 부족합니다.");
+			}
+		}
+		public long getDepositeMoney() {
+			return depositeMoney;
+		}
+		public void run() { 
+			synchronized (this) { // 임계영역 선언
+				for (int i = 0; i < 10; i++) {
+					try {
+						Thread.sleep(1000);
+					}catch (InterruptedException e) { 
+						e.printStackTrace();
+					}
+					if (getDepositeMoney() <= 0)   break; 
+					withDraw(1000); 				
+				}
+			}
+		}
+	}
+	public class ThreadEx5 {
+		public static void main(String[] args) {
+			ATM atm = new ATM();
+			Thread t1 = new Thread(atm, "member1");
+			Thread t2 = new Thread(atm, "member2");
+			t1.start();
+			t2.start();
+		}
+	}
+	```
+ - 위 스레드의 독점 문제를 해결하기 위해 임계영역 내에서 wait(), nofity(), notifyAll() 메서드로 제어할 수 있다.
+	- 독점 문제 : 다른 스레드에는 기아 상태가 발생
+	- wait()는 wait()를 호출한 스레드가 자원의 lock을 놓고 wait pool 에서 대기.
+		- notify()가 될때까지 대기
+	- notify()는 wait pool에서 대기하는 스레드 객체중에 하나만 깨운다.
+		- 깨운 스레드는 resource Object를 모니터링하는 lock pool에서 대기한다.
+	- notifyAll()은 wait pool에서 대기하는 모든 스레드를 깨운다.
+		- 깨운 스레드는 resource Object를 모니터링하는 lock pool에서 대기한다.
+	```java
+	class ATM2 implements Runnable{
+		private long depositeMoney = 10000;
+		public void withDraw(long howMuch) { 
+			if (getDepositeMoney() > 0) { 
+				depositeMoney -= howMuch;
+				System.out.print(Thread.currentThread().getName()+ " , "); 
+				System.out.printf("잔액 : %,d 원 %n", getDepositeMoney());
+			}else {
+				System.out.print(Thread.currentThread().getName()+ " , ");
+				System.out.println("잔액이 부족합니다.");
+			}
+		}
+		public long getDepositeMoney() {
+			return depositeMoney;
+		}
+		public void run() { 
+			synchronized (this) {
+				for (int i = 0; i < 10; i++) {
+					if (getDepositeMoney() <= 0)   break; 
+					withDraw(1000);
+					
+					try {
+						Thread.sleep(1000);
+					}catch (InterruptedException e) { 
+						e.printStackTrace();
+					}
+					
+					if (getDepositeMoney() == 2000
+							|| getDepositeMoney() == 4000
+							|| getDepositeMoney() == 8000) {
+						try {
+							this.wait(); // 2000,4000,8000 시점에 스레드 대기
+						}catch (InterruptedException e) { 
+							e.printStackTrace();
+						}
+					} else {
+						this.notify(); // 대기된 스레드를 깨운다.
+					} // 즉, 각 스레드는 2000원씩만 출금할 수 있도록 제어한다.
+				}
+			}
+		}
+	}
+	public class ThreadEx6 {
+		public static void main(String[] args) {
+			ATM2 atm = new ATM2();
+			Thread t1 = new Thread(atm, "member1");
+			Thread t2 = new Thread(atm, "member2");
+			t1.start();
+			t2.start();
+		}
+	}
+	```
+
+
+## 람다식
+ - Java에서 함수형 프로그래밍을 지원하지 않았으나, 람다식 지원을 통해 함수형 프로그래밍 언어로 만들었다.
+ - 인터페이스에 대한 람다식으로 표현하기 위해서는 인터페이스에는 단 하나의 추상 메서드만 있야 한다.
+	- 람다식을 위한 인터페이스는 함수형 인터페이스라고 한다.
+ - 함수형 인터페이스임을 보장하려면 @FunctionalInterface가 정의되어 있어야 한다.
+	- 선택적이나 컴파일 과정에서 추상 메서드가 하나인지 검사하기 때문에 정확한 함수형 인터페이스로 제공하기 위해서는 선언해주는 것이 좋다.
+```java
+@FunctionalInterface
+public interface Calculable {
+	public void calcultator(int x, int y);
+}
+```
+```java
+public class LambdaEx {
+	public void action(Calculable calculable) {
+		int a = 10, b = 5;
+		calculable.calcultator(a, b);
+	}
+	public static void main(String[] args) {
+		LambdaEx1 ex1 = new LambdaEx1();
+		ex1.action((x, y) -> {
+			int result = x + y;
+			System.out.println(x+"+"+y+"="+result);
+		});
+		
+		ex1.action((x, y) -> {
+			int result = x * y;
+			System.out.println(x+"*"+y+"="+result);
+		});
+	}
+}
+```
+
+
+## 데이터 입출력(I/O)
+ - Java에서 입출력은 작은 단위의 데이터 처리부터 설계했다.
+	- 1byte read/write 설계
+		- ByteStream 이라고 한다.
+	- 2byte read/write 설계
+		- CharacterStream 이라고 한다.
+ - Java에서 데이터 입출력은 Stream이라고 한다.
+	- Stream은 Source에서 Target으로 데이터를 보낸다 라는 개념이다.
+		- Source에서는 write를 하고, Target은 read를 함.
+		- 단방향의 특성을 가진다.
+			- 양방향을 위해서는 Stream을 2개 열어야 한다.
+				- 하나는 입력 Stream, 하나는 출력 Stream 이라고 한다.
+		- FIFO 구조를 가진다.
+			- First In First Out
+		- 데이터양에 따라 지연이 발생할 수 있다.
+ - ByteStream은 2개로 나뉜다.
+	- InputStream / OutputStream
+		- 2개가 최상위 클래스이며, 추상클래스이다.
+	- 입력/출력하는 device에 맞게 종속적인 기능을 구현해야 한다.
+	- 추상클래스이기 때문에 객체 생성이 불가능하다.
+	```java
+	InputStream is = new InputStream(); // x
+	InputStream is = System.in; // O
+
+	OutputStream is = new OutputStream(); // x
+	OutputStream is = System.out; // O
+	```
+ - CharacterStream은 2개로 나뉜다.
+	- Reader / Writer
+		- 2개가 최상위 클래스이며, 추상클래스이다.
+	- 추상클래스이기 때문에 객체 생성이 불가능하다.
+ - Java에서 Stream은 2개로 나뉜다.
+	- 1차 Stream
+		- read, write를 직접적으로 진행한다.
+			- FileInputStream, FileOutputStream 이 있다.
+	- 2차 Stream
+		- 1차 Stream으로부터 data 읽어와서 buffering, filtering, transformation 등의 처리 진행.
+	- 사용 시, 준수해야하는 사항
+		- Stream을 체이닝 할 때, ByteStream은 ByteStream끼리 / CharacterStream은 CharacterStream 끼리 체이닝을 해야한다.
+			- InputStreamReader를 통해 ByteStream을 Reader로 바꾸고 다시 CharacterStream 으로 바꿔 체이닝을 할 수도 있긴 하다.
+			- OutputStreamWriter 도 마찬가지인 얘기이다. 
+	```java
+	import java.io.BufferedReader;
+	import java.io.IOException;
+	import java.io.InputStreamReader;
+
+	public class IOEx1 {
+		public static void main(String[] args) {
+			// 키보드는 ByteStream, 한글은 CharacterStream이다.
+			
+			//new InputStreamReader(System.in)
+			 // System.in은 ByteStream이기 때문에 InputStreamReader으로 Reader로 변환.
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			 // 한글 한글자씩 Reader로 변환하기 번거로워 BufferedReader 활용.
+			try {
+				System.out.println("주소를 입력하세요");
+				String line = br.readLine();
+				System.out.println(line + "는 님의 주소가 맞습니까?");
+			} catch(IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if(br != null) br.close();
+					 // Stream이 종료되면 닫아줘야한다.
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	```
+ - java.io 에 보면 File이라는 객체가 있다.
+	- 해당 객체는 directory, file에 대한 메타정보를 얻거나, 빈 파일을 생성하거나, 이름을 변경하거나, 삭제할 수 있는 기능을 제공한다.
+		- 그러나 내용을 변경할 수는 없다.
+	- JDK 1.7 에서 java.nio 패키지에 Path, Paths 객체가 추가되었다.
+		- Path, Paths는 directory, file을 좀더 개선하여 추상화한 객체이다.
+	```java
+	import java.io.File;
+	import java.io.IOException;
+	import java.nio.file.Path;
+	import java.nio.file.Paths;
+
+	public class IOEx2 {
+		public static void main(String[] args) {
+			try {
+				File f = new File("C:\\test\\newfile.txt");
+				if(f.createNewFile()) {
+					// 새파일은 생성해주지만 directory는 만들어주지 않는다.
+					// 파일이 이미 만들어져있으면 더 만들지 않음.
+					System.out.println("빈 파일이 생성되었습니다.");
+				}
+				
+				String filePath = "c:\\";
+				f = new File(filePath);
+				String list[] = f.list();
+				for(int i=0; i<list.length; i++) {
+					File f2 = new File(filePath, list[i]);
+					if(f2.isDirectory()) {
+						System.out.printf("%s : 디렉토리 %n", list[i]);
+					} else {
+						System.out.printf("%s : 파일(%,dbyte)%n", list[i],f2.length());
+					}
+				} // 파일 목록 출력
+				
+				Path p1 = Paths.get("c:", "test", "newfile.txt");
+				System.out.println(p1.getParent()); // 상위 directory 출략
+				System.out.println(p1.getFileSystem());
+				System.out.println(p1.getFileName()); // 파일 이름 출력
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	```
 	```java
-	import java.sql.Connection;
-	import java.sql.DriverManager;
-	import java.sql.SQLException;
-	import java.util.Properties;
+	public class IOEx3 {
+		public static void main(String[] args) {
+			FileOutputStream fos = null;
+			try {
+				File f = new File("c:\\test");
+				if(!f.exists()) f.mkdir(); // diretory가 없으면 추가
+				
+				fos = new FileOutputStream("c:\\test\\fileout.txt");
+				String msg = "오늘은 JAVA 교육 마지막 날입니다.";
+				fos.write(msg.getBytes());
+				System.out.println("File Write!!");
+			} catch(IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if(fos!=null) fos.close();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	```
+	```java
+	import java.io.File;
 	import java.io.FileInputStream;
 	import java.io.IOException;
 
-	public class JDBCEx {
+	public class IOEx4 {
 		public static void main(String[] args) {
-			Properties info = new Properties();
+			FileInputStream fis = null;
+			String msg = null;
 			try {
-				info.load(new FileInputStream("C:\\Users\\User\\java-test\\Day5\\dbinfo.properties"));
-				 // DB 연결정보가 있는 파일 로딩
-				Class.forName(info.getProperty("driver"));
-				 // jdbc Driver 로딩
-			} catch(ClassNotFoundException ex) {
-				System.err.println("driver class 로딩 못함");
-			} catch(IOException ex) {
-				System.err.println("Properties 로딩 못함.");
+				File f = new File("c:\\test\\fileout.txt");
+				fis = new FileInputStream(f);
+				long len = f.length();
+				byte[] content = new byte[(int)len];
+				fis.read(content);
+				System.out.println(content);
+				 // 배열의 Hash값이 출력된다. (String으로 변환 필요하다.)
+				System.out.println(new String(content));
+				 // 파일의 내용이 출력됨.
+			} catch(IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if(fis!=null) fis.close();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
 			}
-		
+		}
+	}
+	```
+ - Java의 Data Type을 받아, 다른 Java Application에 전달 및 사용할 수도 있다.
+	- Java의 Data Type을 바이트 코드로 변환 후, 다른 Java Application에 전달 및 바이트 코드를 Data Type으로 읽음.
+		- 해당 역할을 해주는게 DataInputStream과 DataOutStream이 있다.
+			해당 2개의 객체는 2차 Stream이다.
+			- 2차 Stream이기 때문에 꼭 1차 Stream가 체이닝 해서 써야 한다.
+	```java
+	import java.io.DataInputStream;
+	import java.io.DataOutputStream;
+	import java.io.FileInputStream;
+	import java.io.FileOutputStream;
+	import java.io.IOException;
+
+	public class IOEx5 {
+		public static void main(String[] args) {
+			FileInputStream fis = null;
+			FileOutputStream fos = null;
+			DataInputStream dis = null;
+			 // 2차 스트림, Java의 기본형을 바이트코드로 읽음.
+			DataOutputStream dos = null;
+			 // 2차 스트림, Java의 기본형을 바이트코드로 기록.
 			try {
-				Connection con = DriverManager.getConnection(
-						info.getProperty("url")
-						, info.getProperty("user")
-						, info.getProperty("passwd"));
-				 // DB Connection
-				System.out.println("DB Connect Success");
-			} catch(SQLException ex) {
+				fos = new FileOutputStream("c:\\test\\dataOut.data");
+				dos = new DataOutputStream(fos);
+				dos.writeBoolean(false);
+				dos.writeInt(20000);
+				dos.writeChar('T');
+				dos.writeDouble(290.45);
+				dos.writeUTF("자바");
+				System.out.println("파일에 자바 기본 자료형 값 기록");
+				
+				fis = new FileInputStream("c:\\test\\dataOut.data");
+				dis = new DataInputStream(fis);
+				System.out.println(dis.readBoolean());
+				System.out.println(dis.readInt());
+				System.out.println(dis.readChar());
+				System.out.println(dis.readDouble());
+				System.out.println(dis.readUTF());
+				 // 기록한 순서대로 읽어야 한다.
+				 // 그렇지 않으면 데이터가 깨져서 읽을 수도 있다.
+			} catch(IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if(fis!=null) fis.close();
+					if(fos!=null) fos.close();
+					if(dis!=null) dis.close();
+					if(dos!=null) dos.close();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	```
+ - 특정 객체를 다른 Java Application으로 보낼 수도 있다.
+	- 방법은 2가지가 있다.
+		- URL로 보낸다.
+		- 직렬화해서 파일에 써서 보내고 받은 쪽은 역직렬화해서 객체로 복원해서 사용한다.
+			- 직렬화 역할로 ObjectInputStream / ObjectOutputStream이 있다.
+	```java
+	import java.io.Serializable;
+
+	public class Book implements Serializable {
+		 // implements Serializable는 Book을 직렬화 가능한 객체로 만들어준다.
+		private String isbn;
+		private String title;
+		private String author;
+		private String publisher;
+		private int price;
+		public Book() {
+			super();
+		}
+		public String getIsbn() {
+			return isbn;
+		}
+		public void setIsbn(String isbn) {
+			this.isbn = isbn;
+		}
+		public String getTitle() {
+			return title;
+		}
+		public void setTitle(String title) {
+			this.title = title;
+		}
+		public String getAuthor() {
+			return author;
+		}
+		public void setAuthor(String author) {
+			this.author = author;
+		}
+		public String getPublisher() {
+			return publisher;
+		}
+		public void setPublisher(String publisher) {
+			this.publisher = publisher;
+		}
+		public int getPrice() {
+			return price;
+		}
+		public void setPrice(int price) {
+			this.price = price;
+		}
+		@Override
+		public String toString() {
+			return "Book [isbn=" + isbn + ", title=" + title + ", author=" + author + ", publisher=" + publisher
+					+ ", price=" + price + "]";
+		}
+	}
+	```
+	```java
+	import java.io.FileInputStream;
+	import java.io.FileOutputStream;
+	import java.io.IOException;
+	import java.io.ObjectInputStream;
+	import java.io.ObjectOutputStream;
+
+	public class IOEx6 {
+		public static void main(String[] args) {
+			FileInputStream fis = null;
+			FileOutputStream fos = null;
+			ObjectInputStream ois = null;
+			ObjectOutputStream oos = null;
+			Book book1 = new Book();
+			book1.setIsbn("82-001-0001");
+			book1.setTitle("후니의 시스코 네트워킹");
+			book1.setAuthor("후니");
+			book1.setPrice(20000);
+			book1.setPublisher("시스코");
+			try {
+				fos = new FileOutputStream("c:\\test\\bookData.data");
+				oos = new ObjectOutputStream(fos);
+				oos.writeObject(book1); // 직렬화해서 파일에 기록(write)
+				System.out.println("파일에 book 객체 저장");
+				
+				fis = new FileInputStream("c:\\test\\bookData.data");
+				ois = new ObjectInputStream(fis);
+				Object o = ois.readObject();
+				System.out.println(o.toString());
+				 // 역직렬화를 통해 객체로 변환되었기 때문에 별도 처리 없이 바로 읽을 수 있다.
+			} catch(Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if(fis!=null) fis.close();
+					if(fos!=null) fos.close();
+					if(ois!=null) ois.close();
+					if(oos!=null) oos.close();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	```
+ - Scanner
+	- 위에서 다뤘던 Stream 객체들을 더욱 편리하게 다룰 수 있도록 Scanner 라는 객체가 나왔다.
+	```java
+	import java.io.FileInputStream;
+	import java.io.IOException;
+	import java.net.URL;
+	import java.net.URLConnection;
+	import java.util.Scanner;
+
+	public class IOEx7 {
+		public static void main(String[] args) {
+			Scanner input = null;
+			try {
+				input = new Scanner(new FileInputStream("c:\\test\\dataOut.data"));
+				 // IOEx5 에서 추출하였던 data 파일 활용.
+				//System.out.println(input.nextBoolean());
+				//System.out.println(input.nextInt());
+				//System.out.println((char)input.nextInt());
+				//System.out.println(input.nextDouble());
+				 // Scanner는 바이트 코드라서 그런지 제대로 못읽어서 주석처리
+				System.out.println(input.next());
+				
+				String txt = "1 fish 2 fish red fish blue fish";
+				Scanner s = new Scanner(txt).useDelimiter("\\s*fish\\s*");
+				 // 와일드카드 처리도 가능하다.
+				System.out.println(s.nextInt());
+				System.out.println(s.nextInt());
+				System.out.println(s.next());
+				System.out.println(s.next());
+				
+				URLConnection urlCon = null; 
+				urlCon = new URL("http://192.10.0.153:9090/java.html").openConnection(); 
+				 // URL 을 통해서 외부에서 파일을 읽을 수도 있음.
+				input = new Scanner(urlCon.getInputStream() );
+				input.useDelimiter("\\Z" ); 
+				String text = input.next(); 
+				System.out.println(text); 
+			} catch(IOException ex) {
+				 // FileInputStream이 있어서 예외처리가 있긴 하나, Scanner만 있는 경우에는 예외처리도 필요 없다.
 				ex.printStackTrace();
 			}
 		}
 	}
 	```
+ - RandomAccessFile 이라는 클래스가 있다.
+	- 별도의 Stream 없이 직접 read, write 할 수 있다.
+		- Stream은 단방향인데, 얘는 양방향이다.
+		- Stream은 시퀀스처럼 처리하는데, 얘는 아니다.
+	- seek() 라는 메서드를 통해 파일 위치를 이동해 원하는 위치에 read, write가 가능하다.
+
+
+## 네트워크
+```java
+import java.net.InetAddress;
+
+public class NetEx1 {
+	public static void main(String[] args) {
+		try {
+			InetAddress local = InetAddress.getLocalHost();
+			System.out.println("local PC의 IP Address : " + local.getHostAddress());
+			
+			InetAddress[] naver = InetAddress.getAllByName("www.naver.com");
+			for(InetAddress addr : naver) {
+				System.out.println("naver IP Address : " + addr.getHostAddress());
+			}
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+}
+```
+ - Java에서 TCP를 추상화한 클래스는 ServerSocket, Socket이 있다.
+	- ServerSocekt은 서버
+		- 포트번호를 다룬다.
+	- Socket은 클라이언트
+		- Socket에는 Read, Write Stream이 존재한다.
+ - Java에서 네트워크 프로그래밍 구성 시, 클라이언트가 다수가 될 수 있기  때문에 스레드 구성은 필수이다.
+ - TCP와 UDP는 구성 방식이 다르다.
+	- TCP 방식
+		```java
+		import java.io.BufferedReader;
+		import java.io.IOException;
+		import java.io.InputStreamReader;
+		import java.io.PrintWriter;
+		import java.net.ServerSocket;
+		import java.net.Socket;
+
+		class ClientHandler extends Thread {
+			private Socket socket;
+			ClientHandler(Socket socket) {
+				this.socket = socket;
+			}
+			@Override
+			public void run() {
+				try(BufferedReader in = new BufferedReader((new InputStreamReader(socket.getInputStream())));
+						PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+					String inputLine;
+					while((inputLine = in.readLine()) != null ) {
+						System.out.println("클라이언트로부터 받은 메시지: " + inputLine);
+						System.out.println(inputLine); // Echo 메세지 전송
+					}
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		public class EchoServer {
+			public static void main(String[] args) {
+				int port = 12345;
+				try (ServerSocket serverSocket = new ServerSocket(port)) {
+					System.out.println("Echo Server가" + port + " 포트에서 실행 중...");
+					while(true) { // 서버를 열어둬야하니 무한루프 구성
+						// for( ; ; ) 도 무한루프 구성이 가능하다.
+						Socket clientSocket = serverSocket.accept();
+						System.out.println("클라이언트 연결됨: "+clientSocket.getInetAddress());
+						
+						new ClientHandler(clientSocket).start();
+					}
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+
+			}
+		}
+		```
+		```java
+		import java.io.BufferedReader;
+		import java.io.IOException;
+		import java.io.InputStreamReader;
+		import java.io.PrintWriter;
+		import java.net.Socket;
+
+		public class EchoClient {
+			public static void main(String[] args) {
+				int port = 12345; 
+				try (Socket socket = new Socket("127.0.0.1", port);
+						BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+						PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+						BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in))) {
+					
+					System.out.print("서버에 연결됨. 메시지를 입력하세요(Q 또는 q 입력시 종료) : ");
+					String userMessage;
+					while ((userMessage = userInput.readLine()) != null) {
+						if("Q".equalsIgnoreCase(userMessage)) {
+							System.out.println("클라이언트를 종료합니다.");
+								break;
+						}
+						out.println(userMessage); //서버에 메시지 전송
+						String response = in.readLine();  //서버의 응답 수신
+						System.out.println("서버 응답: " + response);
+					}
+				} catch (IOException e) {
+						e.printStackTrace();
+				} 
+			}
+		}
+		```
+	- UDP 방식
+		```java
+		import java.io.IOException;
+		import java.net.DatagramPacket;
+		import java.net.DatagramSocket;
+		import java.net.InetAddress;
+
+		public class UDPServer {
+			public static void main(String[] args) {
+				int port = 12345;
+				try (DatagramSocket socket = new DatagramSocket(port)) {
+					System.out.println("UDP Server가" + port + " 포트에서 실행 중...");
+					
+					byte[] buffer = new byte[1024]; // 메시지 수신 받을 버퍼 생성
+					DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
+					while(true) {
+						socket.receive(receivePacket);
+						String receiveMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
+						System.out.println("클라이언트로부터 받은 메시지: " + receiveMessage);
+						
+						InetAddress clientAddress = receivePacket.getAddress(); // 클라이언트 Address 추출
+						int clientPort = receivePacket.getPort();
+						DatagramPacket sendPacket = new DatagramPacket(receivePacket.getData()
+								, receivePacket.getLength(), clientAddress, clientPort);
+						socket.send(sendPacket);
+					}
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		```
+		```java
+		import java.net.DatagramPacket;
+		import java.net.DatagramSocket;
+		import java.net.InetAddress;
+		import java.util.Scanner;
+
+		public class UDPClient {
+			public static void main(String[] args) {
+				String serverAddress = "127.0.0.1";
+				int port = 12345;
+				
+				try (DatagramSocket socket = new DatagramSocket();
+						Scanner scanner = new Scanner(System.in)) {
+					InetAddress serverIP = InetAddress.getByName(serverAddress);
+					System.out.println("서버에 연결됨. 메시지를 입력하세요(Q 또는 q 입력시 종료) ");
+					
+					while (true) {
+						System.out.print("> ");
+						String message = scanner.nextLine();
+						if("Q".equalsIgnoreCase(message)) {
+							System.out.println("클라이언트를 종료합니다.");
+								break;
+						}
+						
+						//서버로 메시지(Packet) 전송
+						byte[] sendData = message.getBytes();
+						DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length
+								, serverIP, port);
+						socket.send(sendPacket);
+						
+						//서버로부터 메시지(Packet) 수신
+						byte[] buffer = new byte[1024];
+						DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
+						socket.receive(receivePacket);
+						String receivedMessage = new String(receivePacket.getData(), 0, 
+									receivePacket.getLength());
+						System.out.println("서버 응답: " + receivedMessage);
+					}
+				} catch (Exception e) {
+						e.printStackTrace();
+				}
+			}
+		}
+		```
+
 
 ## 기타 - main 메서드에 인수 주기
 ```java
